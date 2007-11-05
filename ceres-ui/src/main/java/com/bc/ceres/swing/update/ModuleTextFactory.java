@@ -2,23 +2,18 @@ package com.bc.ceres.swing.update;
 
 import com.bc.ceres.core.runtime.Module;
 import com.bc.ceres.core.runtime.ModuleState;
+import com.bc.ceres.core.runtime.Version;
 import com.bc.ceres.core.runtime.internal.ModuleImpl;
 
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Norman
- * Date: 05.04.2007
- * Time: 16:45:24
- * To change this template use File | Settings | File Templates.
- */
 class ModuleTextFactory {
     private static final String NOT_SPECIFIED = "(not specified)";
+// todo - http://www.brockmann-consult.de/beam-jira/browse/CERES-17 (nf-2007.11.05)
+//    private static final String SNAPSHOT_SUFFIX = "-SNAPSHOT";
 
     static String getText(String s) {
         return s == null ? NOT_SPECIFIED : s;
@@ -72,8 +67,27 @@ class ModuleTextFactory {
     }
 
     static String getVersionText(Module module) {
-        return getText(module.getVersion().toString());
+        final Version version = module.getVersion();
+        String text = null;
+        if (version != null) {
+            text = version.toString();
+// todo - http://www.brockmann-consult.de/beam-jira/browse/CERES-17 (nf-2007.11.05)
+//            if (text.endsWith(SNAPSHOT_SUFFIX)) {
+//                final String idSuffix = createBuildIdSuffix(module);
+//                text = text.substring(0, text.length() - SNAPSHOT_SUFFIX.length()) + idSuffix;
+//            }
+        }
+        return getText(text);
     }
+
+// todo - http://www.brockmann-consult.de/beam-jira/browse/CERES-17 (nf-2007.11.05)
+//
+//    private static String createBuildIdSuffix(Module module) {
+//        final Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.ENGLISH);
+//        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+//        dateFormat.setCalendar(calendar);
+//        return "-" + dateFormat.format(new Date(module.getLastModified()));
+//    }
 
     static String getUpdateVersionText(ModuleItem moduleItem) {
         Module repositoryModule = moduleItem.getRepositoryModule();
