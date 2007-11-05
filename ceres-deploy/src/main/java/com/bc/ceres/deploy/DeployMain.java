@@ -216,7 +216,7 @@ public class DeployMain {
     }
 
     private boolean copyIntoDir(File sourceFile, boolean mustExist, File targetDir, String targetName) throws IOException {
-        InputStream inputStream = null;
+        InputStream inputStream;
         try {
             inputStream = new FileInputStream(sourceFile);
         } catch (FileNotFoundException e) {
