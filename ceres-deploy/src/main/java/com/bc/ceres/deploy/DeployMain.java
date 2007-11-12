@@ -30,9 +30,10 @@ import java.util.zip.ZipFile;
  * independently of the name of the source modules.
  */
 public class DeployMain {
+    private static final String MODULE_MANIFEST_PATH = MODULE_MANIFEST_NAME;
 
     private String[] mandatoryFilePaths = new String[]{
-            MODULE_MANIFEST_NAME,
+            MODULE_MANIFEST_PATH,
     };
 
     private String[] optionalFilePaths = new String[]{
