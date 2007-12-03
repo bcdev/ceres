@@ -1,12 +1,20 @@
 package com.bc.ceres.binding.converters;
 
 import com.bc.ceres.binding.ConversionException;
+import com.bc.ceres.binding.Converter;
 
 public class ByteConverterTest extends AbstractConverterTest {
 
-    public ByteConverterTest() {
-        super(new ByteConverter());
+    private ByteConverter converter;
+
+    @Override
+    public Converter getConverter() {
+        if (converter == null) {
+            converter = new ByteConverter();
     }
+        return converter;
+    }
+
 
     @Override
     public void testConverter() throws ConversionException {

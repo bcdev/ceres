@@ -1,11 +1,18 @@
 package com.bc.ceres.binding.converters;
 
 import com.bc.ceres.binding.ConversionException;
+import com.bc.ceres.binding.Converter;
 
 public class ShortConverterTest extends AbstractConverterTest {
 
-    public ShortConverterTest() {
-        super(new ShortConverter());
+    private ShortConverter converter;
+
+    @Override
+    public Converter getConverter() {
+        if (converter == null) {
+            converter = new ShortConverter();
+    }
+        return converter;
     }
 
     @Override

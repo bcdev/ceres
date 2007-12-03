@@ -1,12 +1,21 @@
 package com.bc.ceres.binding.converters;
 
 import com.bc.ceres.binding.ConversionException;
+import com.bc.ceres.binding.Converter;
 
 public class DoubleConverterTest extends AbstractConverterTest {
 
-    public DoubleConverterTest() {
-        super(new DoubleConverter());
+    private DoubleConverter converter;
+
+
+    @Override
+    public Converter getConverter() {
+        if (converter == null) {
+            converter = new DoubleConverter();
     }
+        return converter;
+    }
+
 
     @Override
     public void testConverter() throws ConversionException {
