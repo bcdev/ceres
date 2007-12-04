@@ -269,15 +269,15 @@ public class ModuleManagerPane extends JPanel {
         actionBar.setFloatable(false);
         JButton installButton = new JButton(installAction);
         installButton.setName("installButton");
+        actionBar.add(installButton);
         JButton updateButton = new JButton(updateAction);
         updateButton.setName("updateButton");
+        actionBar.add(updateButton);
         JButton uninstallButton = new JButton(uninstallAction);
         uninstallButton.setName("uninstallButton");
+        actionBar.add(uninstallButton);
         JButton clearButton = new JButton(clearAction);
         clearButton.setName("clearButton");
-        actionBar.add(installButton);
-        actionBar.add(updateButton);
-        actionBar.add(uninstallButton);
         actionBar.add(clearButton);
 
         categories = new JComboBox();
