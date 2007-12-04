@@ -797,7 +797,7 @@ public class ModuleManagerPane extends JPanel {
 
         public SyncAction() {
             putValue(ACTION_COMMAND_KEY, getClass().getName());
-            putValue(NAME, "Syncronize");
+            putValue(NAME, "Synchronize");
             putValue(SHORT_DESCRIPTION, "Synchronize with remote repository");
             putValue(LARGE_ICON_KEY, new ImageIcon(getClass().getResource("icons/system-software-update.png")));
         }
