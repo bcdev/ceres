@@ -210,15 +210,6 @@ public class ConsistencyCheckerTest extends TestCase {
             }
 
 
-//            private ModuleItem[] createModuleItems(String[] fileNames) {
-//                ArrayList<ModuleItem> moduleItems = new ArrayList<ModuleItem>(fileNames.length);
-//                for (String filename : fileNames) {
-//                    Module module = createModule(filename);
-//                    moduleItems.add(new ModuleItem(module));
-//                }
-//                return moduleItems.toArray(new ModuleItem[moduleItems.size()]);
-//            }
-//
             private ModuleImpl[] createModules(String[] fileNames) {
                 ArrayList<ModuleImpl> moduleList = new ArrayList<ModuleImpl>(fileNames.length);
                 for (String filename : fileNames) {
