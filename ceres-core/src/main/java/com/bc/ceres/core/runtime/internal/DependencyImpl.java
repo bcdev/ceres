@@ -39,18 +39,16 @@ public class DependencyImpl implements Dependency {
         this.declaringModule = declaringModule;
     }
 
-    // todo - test
     @Override
     public int hashCode() {
-        if (libName != null) {
-            return libName.hashCode();
-        } else if (moduleSymbolicName != null) {
-            return moduleSymbolicName.hashCode();
+        if (getLibName() != null) {
+            return getLibName().hashCode();
+        } else if (getModuleSymbolicName() != null) {
+            return getModuleSymbolicName().hashCode();
         }
         return super.hashCode();
     }
 
-    // todo - test
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -59,10 +57,10 @@ public class DependencyImpl implements Dependency {
             return true;
         } else if (obj instanceof Dependency) {
             DependencyImpl other = (DependencyImpl) obj;
-            if (libName != null) {
-                return libName.equals(other.libName);
-            } else if (moduleSymbolicName != null) {
-                return moduleSymbolicName.equals(other.moduleSymbolicName);
+            if (getLibName() != null) {
+                return getLibName().equals(other.getLibName());
+            } else if (getModuleSymbolicName() != null) {
+                return getModuleSymbolicName().equals(other.getModuleSymbolicName());
             }
         }
         return false;
