@@ -29,6 +29,11 @@
         <url>http://www.brockmann-consult.de/beam-jira/browse/CERES</url>
     </issueManagement>
 
+    <scm>
+        <connection>scm:svn:https://www.brockmann-consult.de/svn/os/ceres/branches/ceres-0.6.x</connection>
+        <url>https://www.brockmann-consult.de/svn/os/ceres/branches/ceres-0.6.x</url>
+    </scm>
+
     <licenses>
         <license>
             <name>GNU General Public License (GPL)</name>
