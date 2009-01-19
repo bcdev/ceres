@@ -1,38 +1,19 @@
 package com.bc.ceres.binio;
 
-public abstract class Type {
 
-    protected Type() {
-    }
+public interface Type {
+    String getName();
 
-    public abstract String getName();
+    int getSize();
 
-    public abstract int getSize();
+    boolean isSizeKnown();
 
-    public boolean isSizeKnown() {
-        return getSize() >= 0;
-    }
+    boolean isSimpleType();
 
-    public boolean isSimpleType() {
-        return false;
-    }
+    boolean isCollectionType();
 
-    public boolean isCollectionType() {
-        return isCompoundType() || isSequenceType();
-    }
+    boolean isSequenceType();
 
-    public boolean isSequenceType() {
-        return false;
-    }
-
-    public boolean isCompoundType() {
-        return false;
-    }
-
-    public abstract void visit(TypeVisitor visitor);
-
-    @Override
-    public String toString() {
-        return getClass().getName() + "[name=" + getName() + ",size=" + getSize() + "]";
-    }
+    boolean isCompoundType();
 }
+

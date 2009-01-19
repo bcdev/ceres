@@ -1,8 +1,10 @@
 package com.bc.ceres.binio.expr;
 
 import com.bc.ceres.binio.CompoundData;
-import com.bc.ceres.binio.CompoundType;
+import com.bc.ceres.binio.CompoundMember;
 import com.bc.ceres.binio.Type;
+import static com.bc.ceres.binio.TypeBuilder.COMPOUND;
+import static com.bc.ceres.binio.TypeBuilder.MEMBER;
 
 import java.io.IOException;
 
@@ -26,13 +28,13 @@ public class CompoundExpr extends AbstractExpression {
 
     public Object evaluate(CompoundData context) throws IOException {
         // todo - wrong child parent used here, parent for children must be instance of "this" compound
-        com.bc.ceres.binio.CompoundType.Member[] typeMembers = new CompoundType.Member[members.length];
+        CompoundMember[] typeMembers = new CompoundMember[members.length];
         for (int i = 0; i < members.length; i++) {
             Member member = members[i];
             final Type memberType = (Type) member.type.evaluate(context);
-            typeMembers[i] = new CompoundType.Member(member.name, memberType);
+            typeMembers[i] = MEMBER(member.name, memberType);
         }
-        return new CompoundType(name, typeMembers);
+        return COMPOUND(name, typeMembers);
     }
 
     public static boolean isConstant(Member[] members) {

@@ -2,7 +2,7 @@
     <manifestVersion>1.0.0</manifestVersion>
 
     <symbolicName>ceres-binio</symbolicName>
-    <version>0.8</version>
+    <version>0.8.1-SNAPSHOT</version>
     <name>Ceres Binary I/O Library</name>
 
     <categories>System,Library</categories>
@@ -13,8 +13,12 @@
 
     <changelog>
         <![CDATA[
+            <p/>Changes from 0.8.0 to 0.8.1:<br/>
+            [CERES-31] BINIO shall directly support BINX schemas<br/>
+            [CERES-30] BINIO API revision required<br/>
         ]]>
     </changelog>
+
 
     <vendor>Brockmann Consult GmbH</vendor>
     <contactAddress>Max Planck Str.2, 21502 Geesthacht (Germany)</contactAddress>

@@ -1,8 +1,8 @@
 package com.bc.ceres.binio.smos;
 
 import com.bc.ceres.binio.CompoundType;
-import com.bc.ceres.binio.Format;
-import static com.bc.ceres.binio.util.TypeBuilder.*;
+import com.bc.ceres.binio.DataFormat;
+import static com.bc.ceres.binio.TypeBuilder.*;
 import junit.framework.Assert;
 
 import javax.imageio.stream.ImageOutputStream;
@@ -14,68 +14,59 @@ import java.nio.ByteOrder;
 public class SmosProduct {
     public static final int[] BT_DATA_COUNTERS = new int[]{2, 4, 3, 6};
     public static final CompoundType SNAPSHOT_INFO_TYPE =
-            COMP("Snapshot_Information",
-                 MEMBER("Snapshot_Time", SEQ(UINT, 3)),
-                 MEMBER("Snapshot_ID", UINT),
-                 MEMBER("Snapshot_OBET", SEQ(UBYTE, 8)),
-                 MEMBER("Position", SEQ(DOUBLE, 3)),
-                 MEMBER("Velocity", SEQ(DOUBLE, 3)),
-                 MEMBER("Vector_Source", UBYTE),
-                 MEMBER("Q0", DOUBLE),
-                 MEMBER("Q1", DOUBLE),
-                 MEMBER("Q2", DOUBLE),
-                 MEMBER("Q3", DOUBLE),
-                 MEMBER("TEC", DOUBLE),
-                 MEMBER("Geomag_F", DOUBLE),
-                 MEMBER("Geomag_D", DOUBLE),
-                 MEMBER("Geomag_I", DOUBLE),
-                 MEMBER("Sun_RA", FLOAT),
-                 MEMBER("Sun_DEC", FLOAT),
-                 MEMBER("Sun_BT", FLOAT),
-                 MEMBER("Accuracy", FLOAT),
-                 MEMBER("Radiometric_Accuracy", SEQ(FLOAT, 2)));
+            COMPOUND("Snapshot_Information",
+                     MEMBER("Snapshot_Time", SEQUENCE(UINT, 3)),
+                     MEMBER("Snapshot_ID", UINT),
+                     MEMBER("Snapshot_OBET", SEQUENCE(UBYTE, 8)),
+                     MEMBER("Position", SEQUENCE(DOUBLE, 3)),
+                     MEMBER("Velocity", SEQUENCE(DOUBLE, 3)),
+                     MEMBER("Vector_Source", UBYTE),
+                     MEMBER("Q0", DOUBLE),
+                     MEMBER("Q1", DOUBLE),
+                     MEMBER("Q2", DOUBLE),
+                     MEMBER("Q3", DOUBLE),
+                     MEMBER("TEC", DOUBLE),
+                     MEMBER("Geomag_F", DOUBLE),
+                     MEMBER("Geomag_D", DOUBLE),
+                     MEMBER("Geomag_I", DOUBLE),
+                     MEMBER("Sun_RA", FLOAT),
+                     MEMBER("Sun_DEC", FLOAT),
+                     MEMBER("Sun_BT", FLOAT),
+                     MEMBER("Accuracy", FLOAT),
+                     MEMBER("Radiometric_Accuracy", SEQUENCE(FLOAT, 2)));
     public static final CompoundType F1C_BT_DATA_TYPE =
-            COMP("Bt_Data",
-                 MEMBER("Flags", USHORT),
-                 MEMBER("BT_Value_Real", FLOAT),
-                 MEMBER("BT_Value_Imag", FLOAT),
-                 MEMBER("Radiometric_Accuracy_of_Pixel", USHORT),
-                 MEMBER("Incidence_Angle", USHORT),
-                 MEMBER("Azimuth_Angle", USHORT),
-                 MEMBER("Faraday_Rotation_Angle", USHORT),
-                 MEMBER("Geometric_Rotation_Angle", USHORT),
-                 MEMBER("Snapshot_ID_of_Pixel", UINT),
-                 MEMBER("Footprint_Axis1", USHORT),
-                 MEMBER("Footprint_Axis2", USHORT));
+            COMPOUND("Bt_Data",
+                     MEMBER("Flags", USHORT),
+                     MEMBER("BT_Value_Real", FLOAT),
+                     MEMBER("BT_Value_Imag", FLOAT),
+                     MEMBER("Radiometric_Accuracy_of_Pixel", USHORT),
+                     MEMBER("Incidence_Angle", USHORT),
+                     MEMBER("Azimuth_Angle", USHORT),
+                     MEMBER("Faraday_Rotation_Angle", USHORT),
+                     MEMBER("Geometric_Rotation_Angle", USHORT),
+                     MEMBER("Snapshot_ID_of_Pixel", UINT),
+                     MEMBER("Footprint_Axis1", USHORT),
+                     MEMBER("Footprint_Axis2", USHORT));
     public static final CompoundType F1C_GRID_POINT_DATA_TYPE =
-            COMP("Grid_Point_Data",
-                 MEMBER("Grid_Point_ID", UINT), /*4*/
-                 MEMBER("Grid_Point_Latitude", FLOAT), /*8*/
-                 MEMBER("Grid_Point_Longitude", FLOAT),/*12*/
-                 MEMBER("Grid_Point_Altitude", FLOAT), /*16*/
-                 MEMBER("Grid_Point_Mask", UBYTE),    /*17*/
-                 MEMBER("BT_Data_Counter", UBYTE),    /*18*/
-                 MEMBER("Bt_Data_List", SEQ(F1C_BT_DATA_TYPE)));
+            COMPOUND("Grid_Point_Data",
+                     MEMBER("Grid_Point_ID", UINT), /*4*/
+                     MEMBER("Grid_Point_Latitude", FLOAT), /*8*/
+                     MEMBER("Grid_Point_Longitude", FLOAT),/*12*/
+                     MEMBER("Grid_Point_Altitude", FLOAT), /*16*/
+                     MEMBER("Grid_Point_Mask", UBYTE),    /*17*/
+                     MEMBER("BT_Data_Counter", UBYTE),    /*18*/
+                     MEMBER("Bt_Data_List", VAR_SEQUENCE(F1C_BT_DATA_TYPE, "BT_Data_Counter")));
     public static final CompoundType MIR_SCLF1C_TYPE =
-            COMP("MIR_SCLF1C",
-                 MEMBER("Snapshot_Counter", UINT),
-                 MEMBER("Snapshot_List", SEQ(SNAPSHOT_INFO_TYPE)),
-                 MEMBER("Grid_Point_Counter", UINT),
-                 MEMBER("Grid_Point_List", SEQ(F1C_GRID_POINT_DATA_TYPE)));
+            COMPOUND("MIR_SCLF1C",
+                     MEMBER("Snapshot_Counter", UINT),
+                     MEMBER("Snapshot_List", VAR_SEQUENCE(SNAPSHOT_INFO_TYPE, "Snapshot_Counter")),
+                     MEMBER("Grid_Point_Counter", UINT),
+                     MEMBER("Grid_Point_List", VAR_SEQUENCE(F1C_GRID_POINT_DATA_TYPE, "Grid_Point_Counter")));
 
-    public static final Format MIR_SCLF1C_FORMAT;
+    public static final DataFormat MIR_SCLF1C_FORMAT;
 
     static {
-        final Format format = new Format(SmosProduct.MIR_SCLF1C_TYPE);
-        format.setByteOrder(ByteOrder.LITTLE_ENDIAN);
-        format.addSequenceElementCountResolver(MIR_SCLF1C_TYPE,
-                                               "Snapshot_List", "Snapshot_Counter");
-        format.addSequenceElementCountResolver(MIR_SCLF1C_TYPE,
-                                               "Grid_Point_List", "Grid_Point_Counter");
-        format.addSequenceElementCountResolver(F1C_GRID_POINT_DATA_TYPE,
-                                               "Bt_Data_List", "BT_Data_Counter");
-
-        MIR_SCLF1C_FORMAT = format;
+        MIR_SCLF1C_FORMAT = new DataFormat(SmosProduct.MIR_SCLF1C_TYPE, ByteOrder.LITTLE_ENDIAN);
     }
 
 

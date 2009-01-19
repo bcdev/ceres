@@ -8,7 +8,7 @@ import java.io.IOException;
 abstract class AbstractSequence extends AbstractCollection implements SequenceInstance {
     private final SequenceType sequenceType;
 
-    protected AbstractSequence(IOContext context, CollectionData parent, SequenceType sequenceType) {
+    protected AbstractSequence(DataContext context, CollectionData parent, SequenceType sequenceType) {
         super(context, parent);
         this.sequenceType = sequenceType;
     }
@@ -38,12 +38,11 @@ abstract class AbstractSequence extends AbstractCollection implements SequenceIn
     }
 
     static SequenceType mapSequenceType(CollectionData parent, SequenceType sequenceType) throws IOException {
-        final SequenceType mappedSequenceType;
-        SequenceTypeMapper mapper = parent.getContext().getFormat().getSequenceTypeMapper(sequenceType);
-        if (mapper != null) {
-            mappedSequenceType = mapper.mapSequenceType(parent, sequenceType);
-        } else {
-            mappedSequenceType = sequenceType;
+        SequenceType mappedSequenceType = sequenceType;
+        if (mappedSequenceType instanceof VarSequenceType) {
+            VarSequenceType varSequenceType = (VarSequenceType) mappedSequenceType;
+            mappedSequenceType = varSequenceType.resolve(parent);
+            mappedSequenceType = mapSequenceType(parent, mappedSequenceType);
         }
         return mappedSequenceType;
     }
