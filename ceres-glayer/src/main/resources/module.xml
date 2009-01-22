@@ -2,7 +2,7 @@
     <manifestVersion>1.0.0</manifestVersion>
 
     <symbolicName>ceres-glayer</symbolicName>
-    <version>0.8</version>
+    <version>0.8.1</version>
     <name>Ceres GLayer Library</name>
 
     <categories>System,Library</categories>
@@ -14,6 +14,7 @@
 
     <changelog>
         <![CDATA[
+                Changes in 0.8.1 are related to the Layer API only.</br>
         ]]>
     </changelog>
 
