@@ -15,12 +15,12 @@
 
     <changelog>
         <![CDATA[
-        <p>Changes in 0.7<br/>
+        <p>Changes in 0.8<br/>
         [CERES-32] ProgressMonitorSwingWorker can cause deadlock<br/>
         [CERES-22] Multiple versions of one module available for installation<br/>
         [CERES-21] Version-controlled dependencies are not considered during update<br/>
         </p>
-        <p>Changes in 0.5.1<br/>
+        <p>Changes in 0.5<br/>
         [CERES-004]: "null" displayed instead of Changelog<br/>
         </p>
         ]]>
