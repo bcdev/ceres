@@ -115,6 +115,15 @@
         </dependency>
     </dependencies>
 
+    <!--
+       In version 3.0 of Maven the sourceEncoding property will be embedded in the
+       build tag. For now the convention is to that it as property.
+       TODO: Move the sourceEncoding property to the build tag if version 3.0 is released
+       -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -123,8 +132,7 @@
                     <source>1.6</source>
                     <target>1.6</target>
                     <debug>true</debug>
-                    <fork>false</fork>
-                    <encoding>ISO-8859-1</encoding>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>
