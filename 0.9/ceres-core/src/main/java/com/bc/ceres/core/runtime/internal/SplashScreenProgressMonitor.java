@@ -1,11 +1,5 @@
 package com.bc.ceres.core.runtime.internal;
 
-import com.bc.ceres.core.Assert;
-import com.bc.ceres.core.NullProgressMonitor;
-import com.bc.ceres.core.ProgressMonitor;
-import com.bc.ceres.core.runtime.RuntimeConfig;
-
-import javax.imageio.ImageIO;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,13 +9,19 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.SplashScreen;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.StringTokenizer;
+
+import javax.imageio.ImageIO;
+
+import com.bc.ceres.core.Assert;
+import com.bc.ceres.core.NullProgressMonitor;
+import com.bc.ceres.core.ProgressMonitor;
+import com.bc.ceres.core.runtime.RuntimeConfig;
 
 /**
  * A progress monitor which uses a splash screen.
@@ -68,15 +68,18 @@ public class SplashScreenProgressMonitor extends NullProgressMonitor {
                 return new SplashScreenProgressMonitor(new CeresSplash(bufferedImage), config);
             }
         } else {
-            SplashScreen splashScreen = null;
-            try {
-                splashScreen = SplashScreen.getSplashScreen();
-            } catch (Throwable t) {
-                //
-            }
-            if (splashScreen != null) {
-                return new SplashScreenProgressMonitor(new AwtSplash(splashScreen), config);
-            }
+        	// No java.awt.SplashScreen in Java5 available
+        	// ignore for backport
+        	return new NullProgressMonitor(); 
+//            SplashScreen splashScreen = null;
+//            try {
+//                splashScreen = SplashScreen.getSplashScreen();
+//            } catch (Throwable t) {
+//                //
+//            }
+//            if (splashScreen != null) {
+//                return new SplashScreenProgressMonitor(new AwtSplash(splashScreen), config);
+//            }
         }
         return ProgressMonitor.NULL;
     }
@@ -332,38 +335,38 @@ public class SplashScreenProgressMonitor extends NullProgressMonitor {
         Rectangle getBounds();
     }
 
-    private static class AwtSplash implements Splash {
-        private final SplashScreen splashScreen;
-
-        public AwtSplash(SplashScreen splashScreen) {
-            this.splashScreen = splashScreen;
-        }
-
-        public void close() {
-            splashScreen.close();
-        }
-
-        public boolean isVisible() {
-            return splashScreen.isVisible();
-        }
-
-        public void update() {
-            splashScreen.update();
-        }
-
-
-        public Graphics2D createGraphics() {
-            return splashScreen.createGraphics();
-        }
-
-        public Dimension getSize() {
-            return splashScreen.getSize();
-        }
-
-        public Rectangle getBounds() {
-            return splashScreen.getBounds();
-        }
-    }
+//    private static class AwtSplash implements Splash {
+//        private final SplashScreen splashScreen;
+//
+//        public AwtSplash(SplashScreen splashScreen) {
+//            this.splashScreen = splashScreen;
+//        }
+//
+//        public void close() {
+//            splashScreen.close();
+//        }
+//
+//        public boolean isVisible() {
+//            return splashScreen.isVisible();
+//        }
+//
+//        public void update() {
+//            splashScreen.update();
+//        }
+//
+//
+//        public Graphics2D createGraphics() {
+//            return splashScreen.createGraphics();
+//        }
+//
+//        public Dimension getSize() {
+//            return splashScreen.getSize();
+//        }
+//
+//        public Rectangle getBounds() {
+//            return splashScreen.getBounds();
+//        }
+//    }
 
     private static class CeresSplash extends Window implements Splash {
         private BufferedImage bufferImage;
