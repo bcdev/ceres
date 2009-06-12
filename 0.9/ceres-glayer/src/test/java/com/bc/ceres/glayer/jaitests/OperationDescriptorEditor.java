@@ -56,7 +56,8 @@ public class OperationDescriptorEditor {
     public JPanel createPanel() {
         final GridBagLayout bagLayout = new GridBagLayout();
         final GridBagConstraints constraints = new GridBagConstraints();
-        constraints.anchor = GridBagConstraints.BASELINE;
+//        constraints.anchor = GridBagConstraints.BASELINE; BASELINE with Java6, something else with Java5
+        constraints.anchor = GridBagConstraints.VERTICAL;
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.insets = new Insets(1, 0, 1, 2);
         JPanel panel = new JPanel(bagLayout);

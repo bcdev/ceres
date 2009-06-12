@@ -35,6 +35,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
 import java.awt.image.RenderedImage;
@@ -236,7 +237,7 @@ public class Tools {
         layerCanvas.addMouseWheelListener(mouseHandler);
     }
 
-    public static class MouseHandler extends MouseInputAdapter {
+    public static class MouseHandler extends MouseInputAdapter implements MouseWheelListener {
 
         private LayerCanvas layerCanvas;
         private SliderPopUp sliderPopUp;

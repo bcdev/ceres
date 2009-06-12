@@ -240,7 +240,7 @@ public class WakefulComponent extends JComponent {
         setSize(r.width, r.height);
     }
 
-    private class HitHandler extends MouseAdapter {
+    private class HitHandler extends MouseAdapter implements MouseMotionListener {
         @Override
         public void mouseEntered(MouseEvent e) {
             // System.out.println("WakefulComponent.e = " + e);
@@ -258,11 +258,13 @@ public class WakefulComponent extends JComponent {
             lastHitTimestamp = System.currentTimeMillis();
         }
 
-        @Override
         public void mouseMoved(MouseEvent e) {
             // System.out.println("WakefulComponent.e = " + e);
             lastHitTimestamp = -1;
         }
+
+		public void mouseDragged(MouseEvent arg0) {
+		}
     }
 
     private class TimerListener implements ActionListener {

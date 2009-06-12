@@ -338,11 +338,12 @@ public class LayerCanvas extends JPanel implements AdjustableView {
         canvasRendering.setGraphics2D((Graphics2D) g);
         getLayer().render(canvasRendering, layerFilter);
 
-        if (!isPaintingForPrint()) {
+//      eliminate Java6 method isPaintingForPrint - we'll paint the overlay in any case in Java5.
+//        if (!isPaintingForPrint()) {
             for (Overlay overlay : overlays) {
                 overlay.paintOverlay(this, (Graphics2D) g);
             }
-        }
+//        }
 
         if (debug) {
             double dt = (System.nanoTime() - t0) / (1000.0 * 1000.0);
@@ -353,7 +354,7 @@ public class LayerCanvas extends JPanel implements AdjustableView {
     // JComponent overrides
     /////////////////////////////////////////////////////////////////////////
 
-    private class CanvasRendering implements InteractiveRendering {
+	private class CanvasRendering implements InteractiveRendering {
 
         private Graphics2D graphics2D;
 

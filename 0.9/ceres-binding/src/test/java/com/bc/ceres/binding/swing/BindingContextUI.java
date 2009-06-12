@@ -68,7 +68,8 @@ public class BindingContextUI {
         final GridBagConstraints gbc = new GridBagConstraints();
         final JPanel panel = new JPanel(new GridBagLayout());
 
-        gbc.anchor = GridBagConstraints.BASELINE;
+//        gbc.anchor = GridBagConstraints.BASELINE; BASELINE with Java6, something else with Java5
+        gbc.anchor = GridBagConstraints.VERTICAL;
         gbc.weightx = 1.0;
         gbc.weighty = 0.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
