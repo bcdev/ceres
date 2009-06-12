@@ -9,7 +9,7 @@ import com.bc.ceres.core.ExtensibleObject;
 import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryFactory;
 
-import java.util.ServiceLoader;
+import com.bc.ceres.java5.ServiceLoader;
 
 // todo - Layer API: the API of this class is confusing and it is hard to implement subclasses. (nf)
 

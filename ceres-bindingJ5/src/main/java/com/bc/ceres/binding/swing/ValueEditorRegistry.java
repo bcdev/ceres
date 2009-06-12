@@ -22,7 +22,7 @@ import com.bc.ceres.core.Assert;
 import com.bc.ceres.core.ServiceRegistry;
 import com.bc.ceres.core.ServiceRegistryFactory;
 
-import java.util.ServiceLoader;
+import com.bc.ceres.java5.ServiceLoader;
 
 /**
  * A registry for {@link ValueEditor}.

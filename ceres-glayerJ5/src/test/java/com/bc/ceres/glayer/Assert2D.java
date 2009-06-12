@@ -5,7 +5,10 @@ import java.awt.geom.Rectangle2D;
 import static org.junit.Assert.*;
 
 public class Assert2D {
-    public static double epsilon = 1.0e-10;
+	// With Java6, epsilon was 1.0e-10, with Java5 we might get some
+	// float values to compare instead of double, so epsilon is significantly
+	// higher.
+    public static double epsilon = 1.0e-6;
 
     public static void assertEquals(Point2D expected, Point2D actual) {
         if (expected == actual) {

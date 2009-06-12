@@ -6,7 +6,7 @@
 
     <groupId>com.bc.ceres</groupId>
     <artifactId>ceresJ5</artifactId>
-    <version>0.9</version>
+    <version>0.9-SNAPSHOT</version>
     <name>Ceres</name>
     <url>http://www.brockmann-consult.de/</url>
 
@@ -97,17 +97,17 @@
             <dependency>
                 <groupId>com.bc.ceres</groupId>
                 <artifactId>ceres-launcherJ5</artifactId>
-                <version>0.9</version>
+                <version>0.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.bc.ceres</groupId>
                 <artifactId>ceres-bindingJ5</artifactId>
-                <version>0.9</version>
+                <version>0.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.bc.ceres</groupId>
                 <artifactId>ceres-coreJ5</artifactId>
-                <version>0.9</version>
+                <version>0.9-SNAPSHOT</version>
             </dependency>
 <!--
             <dependency>
