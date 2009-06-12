@@ -4,12 +4,12 @@
 
     <parent>
         <groupId>com.bc.ceres</groupId>
-        <artifactId>ceres</artifactId>
+        <artifactId>ceresJ5</artifactId>
         <version>0.9</version>
     </parent>
 
     <groupId>com.bc.ceres</groupId>
-    <artifactId>ceres-launcher</artifactId>
+    <artifactId>ceres-launcherJ5</artifactId>
     <version>0.9</version>
     <packaging>jar</packaging>
     <name>Ceres Launcher</name>

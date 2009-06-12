@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.bc.ceres</groupId>
-    <artifactId>ceres</artifactId>
+    <artifactId>ceresJ5</artifactId>
     <version>0.9</version>
     <name>Ceres</name>
     <url>http://www.brockmann-consult.de/</url>
@@ -59,15 +59,21 @@
     </licenses>
 
     <modules>
-        <module>ceres-core</module>
-        <module>ceres-binding</module>
+        <module>ceres-coreJ5</module>
+        <module>ceres-bindingJ5</module>
+<!--
         <module>ceres-ui</module>
         <module>ceres-deploy</module>
         <module>ceres-fs</module>
-        <module>ceres-glayer</module>
+-->
+        <module>ceres-glayerJ5</module>
+<!--
         <module>ceres-binio</module>
-        <module>ceres-launcher</module>
+-->
+        <module>ceres-launcherJ5</module>
+<!--
         <module>ceres-site</module>
+-->
     </modules>
 
     <dependencyManagement>
@@ -90,24 +96,26 @@
             </dependency>
             <dependency>
                 <groupId>com.bc.ceres</groupId>
-                <artifactId>ceres-launcher</artifactId>
+                <artifactId>ceres-launcherJ5</artifactId>
                 <version>0.9</version>
             </dependency>
             <dependency>
                 <groupId>com.bc.ceres</groupId>
-                <artifactId>ceres-binding</artifactId>
+                <artifactId>ceres-bindingJ5</artifactId>
                 <version>0.9</version>
             </dependency>
             <dependency>
                 <groupId>com.bc.ceres</groupId>
-                <artifactId>ceres-core</artifactId>
+                <artifactId>ceres-coreJ5</artifactId>
                 <version>0.9</version>
             </dependency>
+<!--
             <dependency>
                 <groupId>com.bc.ceres</groupId>
                 <artifactId>ceres-ui</artifactId>
                 <version>0.9</version>
             </dependency>
+-->
         </dependencies>
     </dependencyManagement>
 

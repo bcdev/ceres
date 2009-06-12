@@ -2,14 +2,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.bc.ceres</groupId>
-    <artifactId>ceres-glayer</artifactId>
+    <artifactId>ceres-glayerJ5</artifactId>
     <packaging>jar</packaging>
     <version>0.9</version>
     <name>Ceres GLayer Library</name>
 
     <parent>
 	    <groupId>com.bc.ceres</groupId>
-	    <artifactId>ceres</artifactId>
+	    <artifactId>ceresJ5</artifactId>
 	    <version>0.9</version>
 	</parent>
 
@@ -17,7 +17,7 @@
 
         <dependency>
             <groupId>com.bc.ceres</groupId>
-            <artifactId>ceres-binding</artifactId>
+            <artifactId>ceres-bindingJ5</artifactId>
         </dependency>
 
         <!-- JAI Libraries -->
