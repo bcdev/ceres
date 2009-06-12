@@ -1,9 +1,15 @@
 package com.bc.ceres.core.runtime.internal;
 
-import com.bc.ceres.core.runtime.ProxyConfig;
-
-import java.net.*;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URL;
+import java.net.URLConnection;
+
+import org.apache.commons.codec.binary.Base64;
+
+import com.bc.ceres.core.runtime.ProxyConfig;
 
 public class UrlHelper {
 
@@ -46,11 +52,9 @@ public class UrlHelper {
         // from http://floatingsun.net/articles/java-proxy.html
         String s = proxyConfig.getUsername() + ':' + new String(proxyConfig.getPassword());
         byte[] bytes = s.getBytes();
-        // todo - this encoder might not be available on Mac OS X!!!
-        sun.misc.BASE64Encoder base64Encoder = new sun.misc.BASE64Encoder();
+        Base64 base64Encoder = new Base64();
         urlConnection.setRequestProperty("Proxy-Authorization",
-                                         "Basic " +
-                                                 base64Encoder.encode(bytes));
+                                         "Basic " + base64Encoder.encode(bytes));
     }
 
     private static Proxy createProxy(ProxyConfig proxyConfig) {
