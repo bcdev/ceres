@@ -61,7 +61,7 @@
     <modules>
         <module>ceres-coreJ5</module>
         <module>ceres-bindingJ5</module>
-        <module>ceres-ui</module>
+        <module>ceres-uiJ5</module>
 <!--
         <module>ceres-deploy</module>
         <module>ceres-fs</module>
