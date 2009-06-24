@@ -36,20 +36,41 @@
 
     <repositories>
         <repository>
-            <id>bc-public</id>
+            <id>bc-mvn-repo-public</id>
             <name>Public Maven Repository at Brockmann-Consult</name>
             <url>http://www.brockmann-consult.de/mvn/os</url>
             <releases>
-              <enabled>true</enabled>
-              <checksumPolicy>warn</checksumPolicy>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
                 <checksumPolicy>warn</checksumPolicy>
             </snapshots>
         </repository>
+        <repository>
+            <id>gt-primary</id>
+            <name>Primary GeoTools Maven Repository</name>
+            <url>http://maven.geotools.fr/repository</url>
+        </repository>
     </repositories>
 
+    <distributionManagement>
+        <downloadUrl>http://www.brockmann-consult.de/mvn/os</downloadUrl>
+        <repository>
+            <id>bc-mvn-repo</id>
+            <name>Corporate BC Maven Repository</name>
+            <url>scp://apache.bc.local/bc-mvn-repo/os</url>
+            <uniqueVersion>false</uniqueVersion>
+        </repository>
+        <snapshotRepository>
+            <id>bc-mvn-repo</id>
+            <name>Corporate BC Maven Repository</name>
+            <url>scp://apache.bc.local/bc-mvn-repo/os</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
+ 
     <licenses>
         <license>
             <name>GNU General Public License (GPL)</name>
