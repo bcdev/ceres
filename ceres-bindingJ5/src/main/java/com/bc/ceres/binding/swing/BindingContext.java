@@ -33,6 +33,8 @@ import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * A context used to bind Swing components to properties in a value container.
@@ -139,6 +141,16 @@ public class BindingContext {
                         final Map<AbstractButton, Object> valueSet) {
         ComponentAdapter adapter = new ButtonGroupAdapter(buttonGroup, valueSet);
         return bind(propertyName, adapter);
+    }
+
+    /**
+     * Adjusts all UI components by calling {@link Binding#adjustComponents()} on
+     * each of its {@link Binding}s.
+     */
+    public void adjustComponents() {
+        for (BindingImpl binding : bindingMap.values()) {
+            binding.adjustComponents();
+        }
     }
 
     public void addPropertyChangeListener(PropertyChangeListener l) {
