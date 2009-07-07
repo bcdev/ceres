@@ -47,7 +47,10 @@ public class ComboBoxAdapter extends ComponentAdapter implements ActionListener,
     @Override
     public void adjustComponents() {
         Object value = getBinding().getPropertyValue();
-        comboBox.setSelectedItem(value);
+        // comboBox.setSelectedItem fires an ActionEvent
+        // even if the selected value didn't change - so
+        // we change the model
+        comboBox.getModel().setSelectedItem(value);
     }
 
     @Override

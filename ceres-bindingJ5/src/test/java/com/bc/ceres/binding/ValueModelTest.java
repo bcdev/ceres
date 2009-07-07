@@ -186,7 +186,6 @@ public class ValueModelTest extends TestCase {
     private static class ValueModelChangeListener implements PropertyChangeListener {
         ArrayList<PropertyChangeEvent> events = new ArrayList<PropertyChangeEvent>();
 
-        @Override
         public void propertyChange(PropertyChangeEvent event) {
             events.add(event);
         }
