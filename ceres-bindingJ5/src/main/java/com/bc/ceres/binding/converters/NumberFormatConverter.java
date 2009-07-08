@@ -8,13 +8,19 @@ import java.text.NumberFormat;
 public class NumberFormatConverter implements com.bc.ceres.binding.Converter<Object> {
 
     private NumberFormat format;
+    private Class<? extends Number> numberType;
 
     public NumberFormatConverter(NumberFormat format) {
+        this(format, Number.class);
+    }
+
+    public NumberFormatConverter(NumberFormat format, Class<? extends Number> numberType) {
         this.format = format;
+        this.numberType = numberType;
     }
 
     public Class<?> getValueType() {
-        return Number.class;
+        return numberType;
     }
 
     public Object parse(String text) throws ConversionException {
@@ -22,7 +28,15 @@ public class NumberFormatConverter implements com.bc.ceres.binding.Converter<Obj
             return null;
         }
         try {
-            return format.parseObject(text);
+            final Number number = format.parse(text);
+            if (Double.class.isAssignableFrom(numberType)) {
+                if (Double.class.isAssignableFrom(number.getClass())) {
+                    return number;
+                } else {
+                    return number.doubleValue();
+                }
+            }
+            return number;
         } catch (Exception e) {
             throw new ConversionException(e);
         }

@@ -15,8 +15,14 @@ public class TypeValidator implements Validator {
             if (name == null) {
                 name = valueModel.getDescriptor().getName();
             }
-            throw new ValidationException(MessageFormat.format("Value for ''{0}'' is not of type ''{1}''.",
-                                                               name, type.getSimpleName()));
+            if (value != null) {
+                throw new ValidationException(MessageFormat.format("Value for ''{0}'' must be of type ''{1}'', but was ''{2}'' (''{3}'').",
+                                                                   name, type.getSimpleName(), value.getClass().getSimpleName(), value));
+            } else {
+                throw new ValidationException(MessageFormat.format("Value for ''{0}'' must be of type ''{1}'', " +
+                        "but was null.",
+                                                                   name, type.getSimpleName()));
+            }
         }
     }
 
@@ -26,14 +32,14 @@ public class TypeValidator implements Validator {
         }
         final Class<?> valueType = value.getClass();
         return type.isAssignableFrom(valueType)
-               || type.isPrimitive()
-                  && (type.equals(Boolean.TYPE) && valueType.equals(Boolean.class)
-                      || type.equals(Character.TYPE) && valueType.equals(Character.class)
-                      || type.equals(Byte.TYPE) && valueType.equals(Byte.class)
-                      || type.equals(Short.TYPE) && valueType.equals(Short.class)
-                      || type.equals(Integer.TYPE) && valueType.equals(Integer.class)
-                      || type.equals(Long.TYPE) && valueType.equals(Long.class)
-                      || type.equals(Float.TYPE) && valueType.equals(Float.class)
-                      || type.equals(Double.TYPE) && valueType.equals(Double.class));
+                || type.isPrimitive()
+                && (type.equals(Boolean.TYPE) && valueType.equals(Boolean.class)
+                || type.equals(Character.TYPE) && valueType.equals(Character.class)
+                || type.equals(Byte.TYPE) && valueType.equals(Byte.class)
+                || type.equals(Short.TYPE) && valueType.equals(Short.class)
+                || type.equals(Integer.TYPE) && valueType.equals(Integer.class)
+                || type.equals(Long.TYPE) && valueType.equals(Long.class)
+                || type.equals(Float.TYPE) && valueType.equals(Float.class)
+                || type.equals(Double.TYPE) && valueType.equals(Double.class));
     }
 }
