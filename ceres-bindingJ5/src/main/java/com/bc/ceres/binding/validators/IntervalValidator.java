@@ -1,12 +1,11 @@
 package com.bc.ceres.binding.validators;
 
+import java.text.MessageFormat;
+
 import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.Validator;
 import com.bc.ceres.binding.ValueModel;
 import com.bc.ceres.binding.ValueRange;
-
-import java.text.MessageFormat;
-import java.text.DecimalFormat;
 
 public class IntervalValidator implements Validator {
     private final ValueRange valueRange;
