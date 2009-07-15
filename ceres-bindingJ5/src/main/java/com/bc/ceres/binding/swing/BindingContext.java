@@ -13,6 +13,7 @@ import com.bc.ceres.binding.swing.internal.FormattedTextFieldAdapter;
 import com.bc.ceres.binding.swing.internal.ListSelectionAdapter;
 import com.bc.ceres.binding.swing.internal.SpinnerAdapter;
 import com.bc.ceres.binding.swing.internal.TextFieldAdapter;
+import com.bc.ceres.core.Assert;
 import com.bc.ceres.java5.StringUtil;
 
 import javax.swing.AbstractButton;
@@ -27,10 +28,13 @@ import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.Window;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Collection;
@@ -49,6 +53,8 @@ public class BindingContext {
     private BindingContext.ErrorHandler errorHandler;
     private Map<String, BindingImpl> bindingMap;
     private Map<String, EnablePCL> enablePCLMap;
+    private ArrayList<ChangeListener> stateChangeListeners;
+    private final PropertyChangeListener valueContainerListener;
 
     public BindingContext() {
         this(new ValueContainer());
@@ -58,23 +64,105 @@ public class BindingContext {
         this(valueContainer, new BindingContext.DefaultErrorHandler());
     }
 
+    /**
+     * Constructor.
+     * @param valueContainer The value container.
+     * @param errorHandler  The error handler.
+     * @deprecated Since 0.10, for error handling use {@link #addStateChangeListener(javax.swing.event.ChangeListener)}
+     * and {@link #getProblems()} instead
+     */
+    @Deprecated
     public BindingContext(ValueContainer valueContainer, BindingContext.ErrorHandler errorHandler) {
         this.valueContainer = valueContainer;
         this.errorHandler = errorHandler;
         this.bindingMap = new HashMap<String, BindingImpl>(17);
         this.enablePCLMap = new HashMap<String, EnablePCL>(11);
+        valueContainerListener = new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+                fireStateChanged();
+            }
+        };
+        this.valueContainer.addPropertyChangeListener(valueContainerListener);
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        this.valueContainer.removePropertyChangeListener(valueContainerListener);
     }
 
     public ValueContainer getValueContainer() {
         return valueContainer;
     }
 
+    /**
+     * @return the error handler
+     */
+    @Deprecated
     public ErrorHandler getErrorHandler() {
         return errorHandler;
     }
 
+    /**
+     * Sets the error handler.
+     * @param errorHandler the error handler
+     *
+     * @deprecated Since 0.10, use {@link #addStateChangeListener(javax.swing.event.ChangeListener)}
+     * and {@link #getProblems()} instead
+     */
+    @Deprecated
     public void setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
+    }
+
+    public boolean hasProblems() {
+        for (Map.Entry<String, BindingImpl> entry : bindingMap.entrySet()) {
+            if (entry.getValue().getProblem() != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public BindingProblem[] getProblems() {
+        ArrayList<BindingProblem> list = new ArrayList<BindingProblem>();
+        for (Map.Entry<String, BindingImpl> entry : bindingMap.entrySet()) {
+            final BindingProblem problem = entry.getValue().getProblem();
+            if (problem != null) {
+                list.add(problem);
+            }
+        }
+        return list.toArray(new BindingProblem[list.size()]);
+    }
+
+    public void addStateChangeListener(ChangeListener listener) {
+        Assert.notNull(listener, "listener");
+        if (stateChangeListeners == null) {
+            stateChangeListeners = new ArrayList<ChangeListener>();
+        }
+        stateChangeListeners.add(listener);
+    }
+
+    public void removeStateChangeListener(ChangeListener listener) {
+        Assert.notNull(listener, "listener");
+        if (stateChangeListeners != null) {
+            stateChangeListeners.remove(listener);
+        }
+    }
+
+    public ChangeListener[] getStateChangeListeners() {
+        if (stateChangeListeners != null) {
+            return stateChangeListeners.toArray(new ChangeListener[stateChangeListeners.size()]);
+        } else {
+            return new ChangeListener[0];
+        }
+    }
+
+    public void fireStateChanged() {
+        ChangeEvent changeEvent = new ChangeEvent(this);
+        for (ChangeListener listener : getStateChangeListeners()) {
+            listener.stateChanged(changeEvent);
+        }
     }
 
     public Binding getBinding(String propertyName) {
@@ -172,14 +260,13 @@ public class BindingContext {
     /**
      * Delegates the call to the error handler.
      *
-     * @param exception The error.
+     * @param error     The error.
      * @param component The Swing component in which the error occured.
-     *
      * @see #getErrorHandler()
      * @see #setErrorHandler(ErrorHandler)
      */
-    public void handleError(Exception exception, JComponent component) {
-        errorHandler.handleError(exception, component);
+    public void handleError(Exception error, JComponent component) {
+        errorHandler.handleError(error, component);
     }
 
     private void configureComponents(Binding binding) {
@@ -249,7 +336,7 @@ public class BindingContext {
                                       final Object sourcePropertyValue) {
         Object propertyValue = valueContainer.getValue(sourcePropertyName);
         boolean conditionIsTrue = propertyValue == sourcePropertyValue
-                                  || (propertyValue != null && propertyValue.equals(sourcePropertyValue));
+                || (propertyValue != null && propertyValue.equals(sourcePropertyValue));
         for (JComponent component : components) {
             component.setEnabled(conditionIsTrue ? enabled : !enabled);
         }
@@ -268,23 +355,35 @@ public class BindingContext {
         bindingMap.remove(propertyName);
     }
 
+    /**
+     * An error handler.
+     * @deprecated Since 0.10, for error handling use {@link BindingContext#addStateChangeListener(javax.swing.event.ChangeListener)}
+     * and {@link BindingContext#getProblems()} instead
+     */
+    @Deprecated
     public interface ErrorHandler {
+    	/**
+    	 * Handles an error.
+    	 * @param error  A {@link com.bc.ceres.binding.BindingException}
+    	 * @param component The component.
+    	 */
 
         void handleError(Exception exception, JComponent component);
     }
 
+    @Deprecated
     private static class DefaultErrorHandler implements BindingContext.ErrorHandler {
 
-        public void handleError(Exception exception, JComponent component) {
+        public void handleError(Exception error, JComponent component) {
             Window window = component != null ? SwingUtilities.windowForComponent(component) : null;
-            if (exception instanceof ValidationException) {
-                JOptionPane.showMessageDialog(window, exception.getMessage(), "Invalid Input",
+            if (error instanceof ValidationException) {
+                JOptionPane.showMessageDialog(window, error.getMessage(), "Invalid Input",
                                               JOptionPane.ERROR_MESSAGE);
             } else {
                 String message = MessageFormat.format("An internal error occured:\nType: {0}\nMessage: {1}\n",
-                                                      exception.getClass(), exception.getMessage());
+                                                      error.getClass(), error.getMessage());
                 JOptionPane.showMessageDialog(window, message, "Internal Error", JOptionPane.ERROR_MESSAGE);
-                exception.printStackTrace();
+                error.printStackTrace();
             }
             if (component != null) {
                 component.requestFocus();
