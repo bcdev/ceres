@@ -73,11 +73,12 @@ public class ComboBoxAdapter extends ComponentAdapter implements ActionListener,
         if (valueSet != null) {
             final Object oldValue = getBinding().getPropertyValue();
             final DefaultComboBoxModel aModel = new DefaultComboBoxModel(valueSet.getItems());
-            if (!valueSet.contains(oldValue)) {
-                aModel.addElement(oldValue);
-            }
             comboBox.setModel(aModel);
-            comboBox.setSelectedItem(oldValue);
-        }
+            if (valueSet.contains(oldValue)) {
+                comboBox.setSelectedItem(oldValue);
+            }
+        } else {
+        	comboBox.setModel(new DefaultComboBoxModel());
+		}
     }
 }
