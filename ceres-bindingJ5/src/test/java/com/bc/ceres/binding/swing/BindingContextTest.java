@@ -76,6 +76,7 @@ public class BindingContextTest extends TestCase implements BindingContext.Error
     public void testBindComboBox() throws ValidationException {
         JComboBox combobox = new JComboBox(new Integer[]{1, 3, 7});
         Binding binding = bindingContextVB.bind("intValue", combobox);
+        valueContainerVB.getModel("intValue").getDescriptor().setValueSet(new ValueSet(new Integer[]{1, 3, 7}));
         assertNotNull(binding);
         assertSame(combobox, getPrimaryComponent(binding));
         assertNotNull(binding.getComponents());
