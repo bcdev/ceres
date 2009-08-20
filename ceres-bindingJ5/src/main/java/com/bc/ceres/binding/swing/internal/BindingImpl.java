@@ -36,6 +36,23 @@ public final class BindingImpl implements Binding, PropertyChangeListener {
         context.removePropertyChangeListener(name, this);
     }
 
+    public BindingProblem getProblem() {
+        return problem;
+    }
+
+    public void setProblem(BindingProblem problem) {
+        if (this.problem != problem
+                && (problem == null
+                || this.problem == null
+                || !problem.equals(this.problem))) {
+            this.problem = problem;
+            context.fireStateChanged();
+            if (problem != null) {
+                componentAdapter.handleError(problem.getCause());
+            }
+        }
+    }
+
     public void propertyChange(PropertyChangeEvent evt) {
         adjustComponents();
     }
@@ -62,7 +79,6 @@ public final class BindingImpl implements Binding, PropertyChangeListener {
             setProblem(null);
         } catch (ValidationException e) {
             setProblem(new BindingProblem(this, e));
-            componentAdapter.handleError(e);
         }
     }
 
@@ -84,9 +100,10 @@ public final class BindingImpl implements Binding, PropertyChangeListener {
     }
 
     /**
-     * Gets the secondary Swing components attached to the binding, e.g. some {@link javax.swing.JLabel}s.
+     * Gets all Swing components this binding is associated with.
      *
-     * @return the secondary Swing components. The returned array may be empty.
+     * @return The component array.
+     *
      * @see #addComponent(javax.swing.JComponent)
      */
     public JComponent[] getComponents() {
@@ -109,6 +126,7 @@ public final class BindingImpl implements Binding, PropertyChangeListener {
      * Attaches a secondary Swing component to this binding.
      *
      * @param component The secondary component.
+     *
      * @see #removeComponent(javax.swing.JComponent)
      */
     public void addComponent(JComponent component) {
@@ -126,6 +144,7 @@ public final class BindingImpl implements Binding, PropertyChangeListener {
      * Detaches a secondary Swing component from this binding.
      *
      * @param component The secondary component.
+     *
      * @see #addComponent(javax.swing.JComponent)
      */
     public void removeComponent(JComponent component) {
@@ -133,18 +152,4 @@ public final class BindingImpl implements Binding, PropertyChangeListener {
             secondaryComponents.remove(component);
         }
     }
-
-
-	public BindingProblem getProblem() {
-		return problem;
-	}
-
-	public void setProblem(BindingProblem problem) {
-		if (this.problem != problem
-				&& (problem == null || this.problem == null || !problem
-						.equals(this.problem))) {
-			this.problem = problem;
-			context.fireStateChanged();
-		}
-	}
 }
