@@ -85,9 +85,9 @@ public class TextComponentAdapter extends ComponentAdapter implements ActionList
             final ValueContainer valueContainer = getBinding().getContext().getValueContainer();
             final ValueModel model = valueContainer.getModel(getBinding().getPropertyName());
             model.setValueFromText(textComponent.getText());
-            getBinding().setProblem(null);
+            getBinding().clearProblem();
         } catch (BindingException e) {
-            getBinding().setProblem(new BindingProblem(getBinding(), e));
+            getBinding().reportProblem(e);
         }
     }
 

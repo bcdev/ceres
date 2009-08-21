@@ -1,15 +1,26 @@
 package com.bc.ceres.binding.swing;
 
-import com.bc.ceres.binding.*;
+import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.ValueContainer;
+import com.bc.ceres.binding.ValueModel;
+import com.bc.ceres.binding.ValueSet;
 import com.bc.ceres.binding.swing.internal.TextComponentAdapter;
-
 import junit.framework.TestCase;
 
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.text.BadLocationException;
-
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 
 /**
@@ -340,13 +351,14 @@ public class BindingContextTest extends TestCase implements BindingContext.Error
         assertSame(label, components[1]);
     }
 
-    public void testExceptions() {
+    public void testProblemManagement() {
         JTextField intTextField = new JTextField();
         JTextField stringTextField = new JTextField();
         final MyChangeListener listener = new MyChangeListener();
 
         clearError();
-        bindingContextVB.addStateChangeListener(listener);
+        bindingContextVB.addProblemListener(listener);
+        bindingContextVB.addPropertyChangeListener(listener);
         bindingContextVB.bind("intValue", intTextField);
         bindingContextVB.bind("stringValue", stringTextField);
 
@@ -360,8 +372,7 @@ public class BindingContextTest extends TestCase implements BindingContext.Error
         clearError();
         bindingContextVB.getBinding("intValue").setPropertyValue("a");
 
-        // binding.exception != null
-        assertEquals("SC;", listener.trace);
+        assertEquals("P;", listener.trace);
         assertEquals(true, bindingContextVB.hasProblems());
         assertNotNull(bindingContextVB.getProblems());
         assertEquals(1, bindingContextVB.getProblems().length);
@@ -371,8 +382,7 @@ public class BindingContextTest extends TestCase implements BindingContext.Error
         clearError();
         bindingContextVB.getBinding("stringValue").setPropertyValue(5);
 
-        // binding.exception != null;binding.exception != null
-        assertEquals("SC;SC;", listener.trace);
+        assertEquals("P;P;", listener.trace);
         assertEquals(true, bindingContextVB.hasProblems());
         assertNotNull(bindingContextVB.getProblems());
         assertEquals(2, bindingContextVB.getProblems().length);
@@ -382,8 +392,7 @@ public class BindingContextTest extends TestCase implements BindingContext.Error
         clearError();
         bindingContextVB.getBinding("intValue").setPropertyValue(5);
 
-        // binding.exception != null;binding.exception != null;property-change;;binding.exception != null
-        assertEquals("SC;SC;SC;SC;", listener.trace);
+        assertEquals("P;P;VC;P;", listener.trace);
         assertEquals(true, bindingContextVB.hasProblems());
         assertNotNull(bindingContextVB.getProblems());
         assertEquals(1, bindingContextVB.getProblems().length);
@@ -393,8 +402,7 @@ public class BindingContextTest extends TestCase implements BindingContext.Error
         clearError();
         bindingContextVB.getBinding("stringValue").setPropertyValue("a");
 
-        // binding.exception != null;binding.exception != null;property-change;binding.exception != null;property-change;binding.exception != null
-        assertEquals("SC;SC;SC;SC;SC;SC;", listener.trace);
+        assertEquals("P;P;VC;P;VC;P;", listener.trace);
         assertEquals(false, bindingContextVB.hasProblems());
         assertNotNull(bindingContextVB.getProblems());
         assertEquals(0, bindingContextVB.getProblems().length);
@@ -403,7 +411,7 @@ public class BindingContextTest extends TestCase implements BindingContext.Error
     }
 
 
-    private JComponent getPrimaryComponent(Binding binding) {
+    private static JComponent getPrimaryComponent(Binding binding) {
         return binding.getComponents()[0];
     }
 
@@ -418,10 +426,15 @@ public class BindingContextTest extends TestCase implements BindingContext.Error
         static Integer[] intValueSet = new Integer[]{101, 102, 103};
     }
 
-    private static class MyChangeListener implements ChangeListener {
+    private static class MyChangeListener implements BindingProblemListener, PropertyChangeListener {
         String trace = "";
-        public void stateChanged(ChangeEvent e) {
-            trace += "SC;";
+
+        public void problemOccurred(BindingProblem problem) {
+            trace += "P;";
+        }
+
+        public void propertyChange(PropertyChangeEvent evt) {
+            trace += "VC;";
         }
     }
 }

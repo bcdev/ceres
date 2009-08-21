@@ -121,9 +121,9 @@ public class ListSelectionAdapter extends ComponentAdapter implements ListSelect
         try {
             model.setValue(array);
             // Now model is in sync with UI
-            getBinding().setProblem(null);
+            getBinding().clearProblem();
         } catch (ValidationException e) {
-            getBinding().setProblem(new BindingProblem(getBinding(), e));
+            getBinding().reportProblem(e);
         }
     }
 }
