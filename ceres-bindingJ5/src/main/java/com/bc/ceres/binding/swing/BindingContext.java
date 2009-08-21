@@ -364,12 +364,12 @@ public class BindingContext {
 
     private String getToolTipText(String propertyName) {
         final ValueModel valueModel = valueContainer.getModel(propertyName);
-        StringBuilder toolTipText = new StringBuilder(32);
+        StringBuilder toolTipText = new StringBuilder(32);                                                  
         final ValueDescriptor valueDescriptor = valueModel.getDescriptor();
         if (valueDescriptor.getDescription() != null) {
             toolTipText.append(valueDescriptor.getDescription());
         }
-        if (valueDescriptor.getUnit() != null && !valueDescriptor.getUnit().isEmpty()) {
+        if (valueDescriptor.getUnit()!= null && valueDescriptor.getUnit().length() > 0) {
             toolTipText.append(" (");
             toolTipText.append(valueDescriptor.getUnit());
             toolTipText.append(")");
@@ -381,7 +381,7 @@ public class BindingContext {
         if (component.getName() == null) {
             component.setName(name);
         }
-        if (component.getToolTipText() == null && !toolTipText.isEmpty()) {
+        if (component.getToolTipText() == null && toolTipText.length() > 0) {
             component.setToolTipText(toolTipText);
         }
     }
