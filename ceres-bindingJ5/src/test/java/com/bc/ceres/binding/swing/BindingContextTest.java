@@ -23,12 +23,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 
-/**
- * Created by Marco Peters.
- *
- * @author Marco Peters
- * @version $Revision$ $Date$
- */
 public class BindingContextTest extends TestCase implements BindingContext.ErrorHandler {
 
     private BindingContext bindingContextVB;
@@ -392,7 +386,7 @@ public class BindingContextTest extends TestCase implements BindingContext.Error
         clearError();
         bindingContextVB.getBinding("intValue").setPropertyValue(5);
 
-        assertEquals("P;P;VC;P;", listener.trace);
+        assertEquals("P;P;V;C;", listener.trace);
         assertEquals(true, bindingContextVB.hasProblems());
         assertNotNull(bindingContextVB.getProblems());
         assertEquals(1, bindingContextVB.getProblems().length);
@@ -402,7 +396,7 @@ public class BindingContextTest extends TestCase implements BindingContext.Error
         clearError();
         bindingContextVB.getBinding("stringValue").setPropertyValue("a");
 
-        assertEquals("P;P;VC;P;VC;P;", listener.trace);
+        assertEquals("P;P;V;C;V;C;", listener.trace);
         assertEquals(false, bindingContextVB.hasProblems());
         assertNotNull(bindingContextVB.getProblems());
         assertEquals(0, bindingContextVB.getProblems().length);
@@ -429,12 +423,16 @@ public class BindingContextTest extends TestCase implements BindingContext.Error
     private static class MyChangeListener implements BindingProblemListener, PropertyChangeListener {
         String trace = "";
 
-        public void problemOccurred(BindingProblem problem) {
+        public void problemReported(BindingProblem newProblem, BindingProblem oldProblem) {
             trace += "P;";
         }
 
+        public void problemCleared(BindingProblem oldProblem) {
+            trace += "C;";
+        }
+
         public void propertyChange(PropertyChangeEvent evt) {
-            trace += "VC;";
+            trace += "V;";
         }
     }
 }
