@@ -374,7 +374,7 @@ public class BindingContext {
         if (component.getName() == null) {
             component.setName(name);
         }
-        if (component.getToolTipText() == null && !toolTipText.isEmpty()) {
+        if (component.getToolTipText() == null && toolTipText.length() > 0) {
             component.setToolTipText(toolTipText);
         }
     }
