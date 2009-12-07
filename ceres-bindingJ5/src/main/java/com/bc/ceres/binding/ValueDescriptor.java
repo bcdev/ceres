@@ -55,6 +55,9 @@ public class ValueDescriptor {
         this.name = name;
         this.type = type;
         this.properties = new HashMap<String, Object>(properties);
+        if (type.isPrimitive()) {
+            setNotNull(true);
+        }
 
         addPropertyChangeListener(new EffectiveValidatorUpdater());
     }
@@ -328,11 +331,12 @@ public class ValueDescriptor {
     private Validator createEffectiveValidator() {
         List<Validator> validators = new ArrayList<Validator>(3);
 
-        validators.add(new TypeValidator());
-
         if (isNotNull()) {
             validators.add(new NotNullValidator());
         }
+
+        validators.add(new TypeValidator());
+
         if (isNotEmpty()) {
             validators.add(new NotEmptyValidator());
         }

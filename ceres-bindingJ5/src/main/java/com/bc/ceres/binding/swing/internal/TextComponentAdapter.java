@@ -106,6 +106,7 @@ public class TextComponentAdapter extends ComponentAdapter implements ActionList
     }
 
     public void focusLost(FocusEvent event) {
+        adjustValue();
     }
 
     class TextVerifier extends InputVerifier {
