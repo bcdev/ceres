@@ -6,7 +6,7 @@
 
     <groupId>com.bc.ceres</groupId>
     <artifactId>ceresJ5</artifactId>
-    <version>0.9-SNAPSHOT</version>
+    <version>0.9.1</version>
     <name>Ceres</name>
     <url>http://www.brockmann-consult.de/</url>
 
@@ -97,17 +97,17 @@
             <dependency>
                 <groupId>com.bc.ceres</groupId>
                 <artifactId>ceres-launcherJ5</artifactId>
-                <version>0.9-SNAPSHOT</version>
+                <version>0.9.1</version>
             </dependency>
             <dependency>
                 <groupId>com.bc.ceres</groupId>
                 <artifactId>ceres-bindingJ5</artifactId>
-                <version>0.9-SNAPSHOT</version>
+                <version>0.9.1</version>
             </dependency>
             <dependency>
                 <groupId>com.bc.ceres</groupId>
                 <artifactId>ceres-coreJ5</artifactId>
-                <version>0.9-SNAPSHOT</version>
+                <version>0.9.1</version>
             </dependency>
 <!--
             <dependency>
@@ -233,6 +233,15 @@
             <organization>Brockmann Consult</organization>
             <roles>
                 <role>Java Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>olafk</id>
+            <name>Olaf Kock</name>
+            <email>olaf.kock@brockmann-consult.de</email>
+            <organization>Brockmann Consult</organization>
+            <roles>
+                <role>0.9J5 Backport Maintainer</role>
             </roles>
         </developer>
     </developers>
