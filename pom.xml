@@ -50,6 +50,22 @@
         </repository>
     </repositories>
 
+    <distributionManagement>
+	<downloadUrl>http://www.brockmann-consult.de/mvn/os</downloadUrl>
+	<repository>
+	    <id>bc-mvn-repo</id>
+            <name>Corporate BC Maven Repository</name>
+            <url>scp://apache.bc.local/bc-mvn-repo/os</url>
+            <uniqueVersion>false</uniqueVersion>
+        </repository>
+        <snapshotRepository>
+            <id>bc-mvn-repo</id>
+            <name>Corporate BC Maven Repository</name>
+            <url>scp://apache.bc.local/bc-mvn-repo/os</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
+
     <licenses>
         <license>
             <name>GNU General Public License (GPL)</name>
