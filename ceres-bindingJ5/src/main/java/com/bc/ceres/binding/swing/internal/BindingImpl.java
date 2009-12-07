@@ -1,8 +1,13 @@
 package com.bc.ceres.binding.swing.internal;
 
+import com.bc.ceres.binding.ValidationException;
+import com.bc.ceres.binding.BindingException;
 import com.bc.ceres.binding.swing.Binding;
 import com.bc.ceres.binding.swing.BindingContext;
+import com.bc.ceres.binding.swing.BindingProblem;
 import com.bc.ceres.binding.swing.ComponentAdapter;
+import com.bc.ceres.binding.swing.BindingProblemListener;
+import com.bc.ceres.core.Assert;
 
 import javax.swing.JComponent;
 import java.beans.PropertyChangeEvent;
@@ -12,13 +17,18 @@ import java.util.List;
 
 public final class BindingImpl implements Binding, PropertyChangeListener {
 
-    private ComponentAdapter componentAdapter;
     private final BindingContext context;
     private final String name;
+    private final ComponentAdapter componentAdapter;
+
     private List<JComponent> secondaryComponents;
     private boolean adjustingComponents;
+    private BindingProblem problem;
 
     public BindingImpl(BindingContext context, String name, ComponentAdapter componentAdapter) {
+        Assert.notNull(context, "context");
+        Assert.notNull(name, "name");
+        Assert.notNull(componentAdapter, "componentAdapter");
         this.context = context;
         this.name = name;
         this.componentAdapter = componentAdapter;
@@ -30,6 +40,30 @@ public final class BindingImpl implements Binding, PropertyChangeListener {
 
     public void unbindProperty() {
         context.removePropertyChangeListener(name, this);
+    }
+
+    public BindingProblem getProblem() {
+        return problem;
+    }
+
+    public void clearProblem() {
+        BindingProblem oldProblem = this.problem;
+        if (oldProblem != null) {
+            this.problem = null;
+            fireProblemCleared(oldProblem);
+        }
+    }
+
+    public BindingProblem reportProblem(BindingException cause) {
+        Assert.notNull(cause, "cause");
+        final BindingProblem newProblem = new BindingProblemImpl(this, cause);
+        BindingProblem oldProblem = this.problem;
+        if (oldProblem == null || !newProblem.equals(oldProblem)) {
+            this.problem = newProblem;
+            fireProblemReported(newProblem, oldProblem);
+            componentAdapter.handleError(newProblem.getCause());
+        }
+        return newProblem;
     }
 
     public void propertyChange(PropertyChangeEvent evt) {
@@ -55,8 +89,9 @@ public final class BindingImpl implements Binding, PropertyChangeListener {
     public void setPropertyValue(Object value) {
         try {
             context.getValueContainer().setValue(getPropertyName(), value);
-        } catch (Exception e) {
-            componentAdapter.handleError(e);
+            clearProblem();
+        } catch (ValidationException e) {
+            reportProblem(e);
         }
     }
 
@@ -66,26 +101,21 @@ public final class BindingImpl implements Binding, PropertyChangeListener {
 
     public void adjustComponents() {
         if (!adjustingComponents) {
-            Exception error = null;
             try {
                 adjustingComponents = true;
                 componentAdapter.adjustComponents();
-            } catch (Exception e) {
-                error = e;
+                // Now model is in sync with UI
+                clearProblem();
             } finally {
                 adjustingComponents = false;
-            }
-            if (error != null) {
-                componentAdapter.handleError(error);
             }
         }
     }
 
     /**
-     * Gets the secondary Swing components attached to the binding, e.g. some {@link javax.swing.JLabel}s.
+     * Gets all Swing components this binding is associated with.
      *
-     * @return the secondary Swing components. The returned array may be empty.
-     *
+     * @return The component array.
      * @see #addComponent(javax.swing.JComponent)
      */
     public JComponent[] getComponents() {
@@ -94,9 +124,7 @@ public final class BindingImpl implements Binding, PropertyChangeListener {
         } else {
             JComponent[] primaryComponents = componentAdapter.getComponents();
             JComponent[] allComponents = new JComponent[primaryComponents.length + secondaryComponents.size()];
-            for (int i = 0; i < primaryComponents.length; i++) {
-                allComponents[i] = primaryComponents[i];
-            }
+            System.arraycopy(primaryComponents, 0, allComponents, 0, primaryComponents.length);
             int j = primaryComponents.length;
             for (JComponent component : secondaryComponents) {
                 allComponents[j] = component;
@@ -110,7 +138,6 @@ public final class BindingImpl implements Binding, PropertyChangeListener {
      * Attaches a secondary Swing component to this binding.
      *
      * @param component The secondary component.
-     *
      * @see #removeComponent(javax.swing.JComponent)
      */
     public void addComponent(JComponent component) {
@@ -128,7 +155,6 @@ public final class BindingImpl implements Binding, PropertyChangeListener {
      * Detaches a secondary Swing component from this binding.
      *
      * @param component The secondary component.
-     *
      * @see #addComponent(javax.swing.JComponent)
      */
     public void removeComponent(JComponent component) {
@@ -136,4 +162,19 @@ public final class BindingImpl implements Binding, PropertyChangeListener {
             secondaryComponents.remove(component);
         }
     }
+
+
+    void fireProblemReported(BindingProblem newProblem, BindingProblem oldProblem) {
+        for (BindingProblemListener listener : context.getProblemListeners()) {
+            listener.problemReported(newProblem, oldProblem);
+        }
+    }
+
+    void fireProblemCleared(BindingProblem oldProblem) {
+        for (BindingProblemListener listener : context.getProblemListeners()) {
+            listener.problemCleared(oldProblem);
+        }
+    }
+
+
 }

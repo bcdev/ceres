@@ -1,5 +1,7 @@
 package com.bc.ceres.binding.swing;
 
+import com.bc.ceres.binding.BindingException;
+
 import javax.swing.JComponent;
 
 /**
@@ -20,7 +22,7 @@ import javax.swing.JComponent;
  *
  * @author Norman Fomferra
  * @version $Revision$ $Date$
- * @since BEAM 4.2
+ * @since Ceres 0.6
  */
 public interface Binding {
     /**
@@ -46,19 +48,52 @@ public interface Binding {
     /**
      * Sets the value of the bound property.
      * This may trigger a property change event in the associated {@code ValueContainer}.
-     * Any exception thrown during this operation will be delegated to {@link ComponentAdapter#handleError(Exception)}.
+     * Whether or not setting the value was successful can be retrieved by {@link #getProblem()}.
      *
      * @param value The new value of the bound property.
      */
     void setPropertyValue(Object value);
 
     /**
-     * Adjusts the bound Swing components in reaction to a property change event in the
-     * associated {@code ValueContainer}. Calls {@link ComponentAdapter#adjustComponents()}
-     * only if this binding is not already adjusting the bound Swing components.
-     * Any kind of exceptions thrown during execution of the method
-     * will be handled by delegating the exception to
-     * the {@link ComponentAdapter#handleError(Exception)} method.
+     * Gets the current problem. If the GUI is in sync with the associated value model,
+     * the method will return {@code null}.
+     *
+     * @return The current problem, or {@code null}.
+     *
+     * @since Ceres 0.10
+     */
+    BindingProblem getProblem();
+
+    /**
+     * Clears the current problem.
+     *
+     * @since Ceres 0.10
+     */
+    void clearProblem();
+
+    /**
+     * Reports a problem.
+     * The method sets the current problem and will cause the {@link #getContext() context}
+     * to fire a problem-occurred event.
+     *
+     * @param cause The cause.
+     *
+     * @return The resulting problem.
+     *
+     * @since Ceres 0.10
+     */
+    BindingProblem reportProblem(BindingException cause);
+
+    /**
+     * Adjusts the Swing components in reaction to a bound property change event in the
+     * associated {@link com.bc.ceres.binding.ValueContainer ValueContainer}.
+     * <p/>
+     * The method delegates to {@link ComponentAdapter#adjustComponents()},
+     * but only if this binding is not already adjusting its GUI components.
+     * <p/>
+     * After calling this method the UI is in sync with the value model, so that {@link #getProblem()}
+     * will return {@code null}.
+     *
      * @see #isAdjustingComponents()
      */
     void adjustComponents();
@@ -67,6 +102,7 @@ public interface Binding {
      * Tests if this binding is currently adjusting the bound Swing components.
      *
      * @return {@code true} if so.
+     *
      * @see #adjustComponents()
      */
     boolean isAdjustingComponents();
@@ -83,14 +119,16 @@ public interface Binding {
      * Adds a secondary Swing component to this binding, e.g. a {@link javax.swing.JLabel}.
      *
      * @param component The secondary component.
+     *
      * @see #removeComponent(javax.swing.JComponent)
      */
     void addComponent(JComponent component);
 
     /**
-     * Removed a secondary Swing component from this binding.
+     * Removes a secondary Swing component from this binding.
      *
      * @param component The secondary component.
+     *
      * @see #addComponent(javax.swing.JComponent)
      */
     void removeComponent(JComponent component);

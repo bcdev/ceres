@@ -1,7 +1,6 @@
 package com.bc.ceres.binding.swing;
 
 
-import com.bc.ceres.binding.ValidationException;
 import com.bc.ceres.binding.ValueContainer;
 import com.bc.ceres.binding.ValueDescriptor;
 import com.bc.ceres.binding.ValueModel;
@@ -12,8 +11,8 @@ import com.bc.ceres.binding.swing.internal.ComboBoxAdapter;
 import com.bc.ceres.binding.swing.internal.FormattedTextFieldAdapter;
 import com.bc.ceres.binding.swing.internal.ListSelectionAdapter;
 import com.bc.ceres.binding.swing.internal.SpinnerAdapter;
-import com.bc.ceres.binding.swing.internal.TextFieldAdapter;
-import com.bc.ceres.java5.StringUtil;
+import com.bc.ceres.binding.swing.internal.TextComponentAdapter;
+import com.bc.ceres.core.Assert;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -27,21 +26,20 @@ import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.text.JTextComponent;
 import java.awt.Window;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * A context used to bind Swing components to properties in a value container.
  *
  * @author Norman Fomferra
  * @version $Revision$ $Date$
- * @since BEAM 4.1
+ * @since Ceres 0.6
  */
 public class BindingContext {
 
@@ -49,32 +47,178 @@ public class BindingContext {
     private BindingContext.ErrorHandler errorHandler;
     private Map<String, BindingImpl> bindingMap;
     private Map<String, EnablePCL> enablePCLMap;
+    private ArrayList<BindingProblemListener> bindingProblemListeners;
 
+    /**
+     * Constructor.
+     */
     public BindingContext() {
         this(new ValueContainer());
     }
 
+    /**
+     * Constructor.
+     *
+     * @param valueContainer The value container.
+     */
     public BindingContext(ValueContainer valueContainer) {
-        this(valueContainer, new BindingContext.DefaultErrorHandler());
+        this(valueContainer, new VerbousProblemHandler());
     }
 
-    public BindingContext(ValueContainer valueContainer, BindingContext.ErrorHandler errorHandler) {
+    /**
+     * Constructor.
+     *
+     * @param valueContainer The value container.
+     * @param problemHandler A problem handler, or {@code null}.
+     */
+    public BindingContext(ValueContainer valueContainer, BindingProblemListener problemHandler) {
         this.valueContainer = valueContainer;
-        this.errorHandler = errorHandler;
         this.bindingMap = new HashMap<String, BindingImpl>(17);
         this.enablePCLMap = new HashMap<String, EnablePCL>(11);
+        if (problemHandler != null) {
+            addProblemListener(problemHandler);
+        }
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param valueContainer The value container.
+     * @param errorHandler   The error handler, or {@code null}.
+     *
+     * @deprecated Since 0.10, for error handling use {@link #addProblemListener(BindingProblemListener)}
+     *             and {@link #getProblems()} instead
+     */
+    @Deprecated
+    public BindingContext(ValueContainer valueContainer, BindingContext.ErrorHandler errorHandler) {
+        this(valueContainer, (BindingProblemListener) null);
+        this.errorHandler = errorHandler;
     }
 
     public ValueContainer getValueContainer() {
         return valueContainer;
     }
 
+    /**
+     * @return The error handler or {@code null}.
+     *
+     * @deprecated Since 0.10, for error handling use {@link #addProblemListener(BindingProblemListener)}
+     *             and {@link #getProblems()} instead
+     */
+    @Deprecated
     public ErrorHandler getErrorHandler() {
         return errorHandler;
     }
 
+    /**
+     * Sets the error handler.
+     *
+     * @param errorHandler The error handler, or {@code null}.
+     *
+     * @deprecated Since 0.10, for error handling use {@link #addProblemListener(BindingProblemListener)}
+     *             and {@link #getProblems()} instead
+     */
+    @Deprecated
     public void setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
+    }
+
+    /**
+     * Delegates the call to the error handler, if any.
+     *
+     * @param error     The error.
+     * @param component The Swing component in which the error occured.
+     *
+     * @see #getErrorHandler()
+     * @see #setErrorHandler(ErrorHandler)
+     * @deprecated Since 0.10, for error handling use {@link #addProblemListener(BindingProblemListener)}
+     *             and {@link BindingContext#getProblems()} instead
+     */
+    @Deprecated
+    public void handleError(Exception error, JComponent component) {
+        if (errorHandler != null) {
+            errorHandler.handleError(error, component);
+        }
+    }
+
+    /**
+     * @return {@code true} if this context has problems.
+     *
+     * @since Ceres 0.10
+     */
+    public boolean hasProblems() {
+        for (Map.Entry<String, BindingImpl> entry : bindingMap.entrySet()) {
+            if (entry.getValue().getProblem() != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return The array of problems this context might have.
+     *
+     * @since Ceres 0.10
+     */
+    public BindingProblem[] getProblems() {
+        ArrayList<BindingProblem> list = new ArrayList<BindingProblem>();
+        for (Map.Entry<String, BindingImpl> entry : bindingMap.entrySet()) {
+            final BindingProblem problem = entry.getValue().getProblem();
+            if (problem != null) {
+                list.add(problem);
+            }
+        }
+        return list.toArray(new BindingProblem[list.size()]);
+    }
+
+    /**
+     * Adds a problem listener to this context.
+     *
+     * @param listener The listener.
+     *
+     * @since Ceres 0.10
+     */
+    public void addProblemListener(BindingProblemListener listener) {
+        Assert.notNull(listener, "listener");
+        if (bindingProblemListeners == null) {
+            bindingProblemListeners = new ArrayList<BindingProblemListener>();
+        }
+        bindingProblemListeners.add(listener);
+    }
+
+    /**
+     * Removes a problem listener from this context.
+     *
+     * @param listener The listener.
+     *
+     * @since Ceres 0.10
+     */
+    public void removeProblemListener(BindingProblemListener listener) {
+        Assert.notNull(listener, "listener");
+        if (bindingProblemListeners != null) {
+            bindingProblemListeners.remove(listener);
+        }
+    }
+
+    /**
+     * @return The array of problem listeners.
+     *
+     * @since Ceres 0.10
+     */
+    public BindingProblemListener[] getProblemListeners() {
+        return bindingProblemListeners != null
+                ? bindingProblemListeners.toArray(new BindingProblemListener[bindingProblemListeners.size()])
+                : new BindingProblemListener[0];
+    }
+
+    /**
+     * Adjusts all associated Swing components so that they reflect the
+     * values of the associated value container.
+     */
+    public void adjustComponents() {
+        for (Map.Entry<String, BindingImpl> entry : bindingMap.entrySet()) {
+            entry.getValue().adjustComponents();
+        }
     }
 
     public Binding getBinding(String propertyName) {
@@ -100,8 +244,12 @@ public class BindingContext {
         binding.getComponentAdapter().unbindComponents();
     }
 
+    public Binding bind(final String propertyName, final JTextComponent textComponent) {
+        return bind(propertyName, new TextComponentAdapter(textComponent));
+    }
+
     public Binding bind(final String propertyName, final JTextField textField) {
-        return bind(propertyName, new TextFieldAdapter(textField));
+        return bind(propertyName, new TextComponentAdapter(textField));
     }
 
     public Binding bind(final String propertyName, final JFormattedTextField textField) {
@@ -143,16 +291,6 @@ public class BindingContext {
         return bind(propertyName, adapter);
     }
 
-    /**
-     * Adjusts all UI components by calling {@link Binding#adjustComponents()} on
-     * each of its {@link Binding}s.
-     */
-    public void adjustComponents() {
-        for (BindingImpl binding : bindingMap.values()) {
-            binding.adjustComponents();
-        }
-    }
-
     public void addPropertyChangeListener(PropertyChangeListener l) {
         valueContainer.addPropertyChangeListener(l);
     }
@@ -170,16 +308,39 @@ public class BindingContext {
     }
 
     /**
-     * Delegates the call to the error handler.
+     * Permits component validation and property changes of the value container
+     * triggered by the given component.
      *
-     * @param exception The error.
-     * @param component The Swing component in which the error occured.
+     * @param component The component.
      *
-     * @see #getErrorHandler()
-     * @see #setErrorHandler(ErrorHandler)
+     * @see #preventPropertyChanges(javax.swing.JComponent)
+     * @see #getValueContainer()
+     * @since Ceres 0.10
      */
-    public void handleError(Exception exception, JComponent component) {
-        errorHandler.handleError(exception, component);
+    @SuppressWarnings({"MethodMayBeStatic"})
+    public void permitPropertyChanges(JComponent component) {
+        component.setVerifyInputWhenFocusTarget(true);
+    }
+
+    /**
+     * Prevents component validation and property changes of the value container
+     * triggered by the given component.
+     * <p/>
+     * For example, if a text component loses keyboard focus because another component requests it,
+     * its text value will be converted, validated and the value container's property will be changed.
+     * For some focus targets, like a dialog's "Cancel" button, this is not desired.
+     * <p/>
+     * By default, component validation and property changes are permitted for most Swing components.
+     *
+     * @param component The component.
+     *
+     * @see #permitPropertyChanges(javax.swing.JComponent)
+     * @see #getValueContainer()
+     * @since Ceres 0.10
+     */
+    @SuppressWarnings({"MethodMayBeStatic"})
+    public void preventPropertyChanges(JComponent component) {
+        component.setVerifyInputWhenFocusTarget(false);
     }
 
     private void configureComponents(Binding binding) {
@@ -201,7 +362,7 @@ public class BindingContext {
         if (valueDescriptor.getDescription() != null) {
             toolTipText.append(valueDescriptor.getDescription());
         }
-        if (valueDescriptor.getUnit() != null && !StringUtil.isEmpty(valueDescriptor.getUnit())) {
+        if (valueDescriptor.getUnit() != null && (valueDescriptor.getUnit().length() > 0)) {
             toolTipText.append(" (");
             toolTipText.append(valueDescriptor.getUnit());
             toolTipText.append(")");
@@ -209,11 +370,11 @@ public class BindingContext {
         return toolTipText.toString();
     }
 
-    private void configureComponent(JComponent component, String name, String toolTipText) {
+    private static void configureComponent(JComponent component, String name, String toolTipText) {
         if (component.getName() == null) {
             component.setName(name);
         }
-        if (component.getToolTipText() == null && !StringUtil.isEmpty(toolTipText)) {
+        if (component.getToolTipText() == null && toolTipText.length() > 0) {
             component.setToolTipText(toolTipText);
         }
     }
@@ -249,7 +410,7 @@ public class BindingContext {
                                       final Object sourcePropertyValue) {
         Object propertyValue = valueContainer.getValue(sourcePropertyName);
         boolean conditionIsTrue = propertyValue == sourcePropertyValue
-                                  || (propertyValue != null && propertyValue.equals(sourcePropertyValue));
+                || (propertyValue != null && propertyValue.equals(sourcePropertyValue));
         for (JComponent component : components) {
             component.setEnabled(conditionIsTrue ? enabled : !enabled);
         }
@@ -268,27 +429,28 @@ public class BindingContext {
         bindingMap.remove(propertyName);
     }
 
-    public interface ErrorHandler {
+    public static class VerbousProblemHandler implements BindingProblemListener {
+        public void problemReported(BindingProblem newProblem, BindingProblem oldProblem) {
+            final Binding binding = newProblem.getBinding();
+            final ComponentAdapter adapter = binding.getComponentAdapter();
+            final JComponent component = adapter.getComponents()[0];
+            final Window window = SwingUtilities.windowForComponent(component);
+            JOptionPane.showMessageDialog(window,
+                                          newProblem.getCause().getMessage(),
+                                          "Invalid Input",
+                                          JOptionPane.ERROR_MESSAGE);
+        }
 
-        void handleError(Exception exception, JComponent component);
+        public void problemCleared(BindingProblem oldProblem) {
+        }
     }
 
-    private static class DefaultErrorHandler implements BindingContext.ErrorHandler {
+    public static class SilentProblemHandler implements BindingProblemListener {
+        public void problemReported(BindingProblem newProblem, BindingProblem oldProblem) {
+            newProblem.getBinding().adjustComponents();
+        }
 
-        public void handleError(Exception exception, JComponent component) {
-            Window window = component != null ? SwingUtilities.windowForComponent(component) : null;
-            if (exception instanceof ValidationException) {
-                JOptionPane.showMessageDialog(window, exception.getMessage(), "Invalid Input",
-                                              JOptionPane.ERROR_MESSAGE);
-            } else {
-                String message = MessageFormat.format("An internal error occured:\nType: {0}\nMessage: {1}\n",
-                                                      exception.getClass(), exception.getMessage());
-                JOptionPane.showMessageDialog(window, message, "Internal Error", JOptionPane.ERROR_MESSAGE);
-                exception.printStackTrace();
-            }
-            if (component != null) {
-                component.requestFocus();
-            }
+        public void problemCleared(BindingProblem oldProblem) {
         }
     }
 
@@ -317,5 +479,22 @@ public class BindingContext {
                                  sourcePropertyName,
                                  sourcePropertyValue);
         }
+    }
+
+    /**
+     * An error handler.
+     *
+     * @deprecated Since 0.10, for error handling use {@link BindingContext#addProblemListener(BindingProblemListener)}
+     *             and {@link BindingContext#getProblems()} instead
+     */
+    @Deprecated
+    public interface ErrorHandler {
+        /**
+         * Handles an error.
+         *
+         * @param error     A {@link com.bc.ceres.binding.BindingException}
+         * @param component The component.
+         */
+        void handleError(Exception error, JComponent component);
     }
 }
