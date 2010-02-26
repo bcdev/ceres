@@ -6,7 +6,7 @@
 
     <groupId>com.bc.ceres</groupId>
     <artifactId>ceres</artifactId>
-    <version>0.10</version>
+    <version>0.10.1</version>
     <name>Ceres</name>
     <url>http://www.brockmann-consult.de/</url>
 
@@ -114,7 +114,7 @@
             <dependency>
                 <groupId>com.bc.ceres</groupId>
                 <artifactId>ceres-core</artifactId>
-                <version>0.10</version>
+                <version>0.10.1</version>
             </dependency>
             <dependency>
                 <groupId>com.bc.ceres</groupId>
