@@ -50,18 +50,17 @@
         </repository>
     </repositories>
 
-    <distributionManagement>
-	<downloadUrl>http://www.brockmann-consult.de/mvn/os</downloadUrl>
-	<repository>
-	    <id>bc-mvn-repo</id>
-            <name>Corporate BC Maven Repository</name>
-            <url>scp://apache.bc.local/bc-mvn-repo/os</url>
+	<distributionManagement>
+        <repository>
+            <id>bc-mvn-repo-public</id>
+            <name>Public Maven Repository at Brockmann Consult</name>
+            <url>scp://www.brockmann-consult.de/var/www/www.brockmann-consult.de/mvn/os</url>
             <uniqueVersion>false</uniqueVersion>
         </repository>
         <snapshotRepository>
-            <id>bc-mvn-repo</id>
-            <name>Corporate BC Maven Repository</name>
-            <url>scp://apache.bc.local/bc-mvn-repo/os</url>
+            <id>bc-mvn-repo-public</id>
+            <name>Public Maven Snapshot Repository at Brockmann Consult</name>
+            <url>scp://www.brockmann-consult.de/var/www/www.brockmann-consult.de/mvn/os</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
