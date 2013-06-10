@@ -2,13 +2,13 @@
     <manifestVersion>1.0.0</manifestVersion>
 
     <symbolicName>ceres-core</symbolicName>
-    <version>0.13.2</version>
+    <version>0.13.3</version>
     <name>Ceres Runtime Library</name>
     <activator>com.bc.ceres.core.runtime.internal.RuntimeActivator</activator>
 
     <changelog>
         <![CDATA[
-        Changes in 0.13.2<br/>
+        Changes in 0.13.3<br/>
           class ProcessObserver added.
           abstract class ProgressBarProgressMonitor added.
         Changes in 0.13.1<br/>

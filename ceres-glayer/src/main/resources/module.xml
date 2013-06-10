@@ -2,7 +2,7 @@
     <manifestVersion>1.0.0</manifestVersion>
 
     <symbolicName>ceres-glayer</symbolicName>
-    <version>0.13.2</version>
+    <version>0.13.3</version>
     <name>Ceres GLayer Library</name>
 
     <categories>System,Library</categories>
@@ -18,7 +18,7 @@
 
     <changelog>
         <![CDATA[
-         changes in 0.13.2<br/>
+         changes in 0.13.3<br/>
          - method added to AbstractMultiLevelSource to compute scaled image rectangles
          - system properties added to customise rendering performance
              ceres.renderer.cache.capacity

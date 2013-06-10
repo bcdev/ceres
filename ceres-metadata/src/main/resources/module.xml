@@ -2,7 +2,7 @@
     <manifestVersion>1.0.0</manifestVersion>
 
     <symbolicName>ceres-metadata</symbolicName>
-    <version>0.13.2</version>
+    <version>0.13.3</version>
     <name>Ceres Metadata handling Library</name>
 
     <categories>System,Library</categories>
@@ -13,7 +13,7 @@
 
     <changelog>
         <![CDATA[
-           a new module since version 0.13.2<br/>
+           a new module since version 0.13.3<br/>
         ]]>
     </changelog>
 
