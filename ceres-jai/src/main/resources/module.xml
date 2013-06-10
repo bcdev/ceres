@@ -14,7 +14,9 @@
 
     <changelog>
         <![CDATA[
-                ]]>
+         Changes in 0.13.3
+         - fixed initialisation of SampleModel in ReinterpretOpImage
+        ]]>
     </changelog>
 
     <vendor>Brockmann Consult GmbH</vendor>
