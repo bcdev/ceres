@@ -20,9 +20,9 @@ import com.bc.ceres.jai.ExpressionCompilerConfig;
 import com.bc.ceres.jai.opimage.ExpressionCRIF;
 import com.bc.ceres.jai.opimage.ExpressionOpImage_1;
 import junit.framework.TestCase;
-import org.jdom2.Document;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
