@@ -45,6 +45,11 @@ import java.util.List;
  */
 public class ExclusionListBuilder {
 
+    static {
+        // http://stackoverflow.com/questions/7615645/ssl-handshake-alert-unrecognized-name-error-since-upgrade-to-java-1-7-0
+        System.setProperty ("jsse.enableSNIExtension", "false");
+    }
+
     private static final String MODULE_NAME = "module";
     private static final String MODULES_NODE = "modules";
 
