@@ -63,6 +63,9 @@ public class ConcurrentMultiLevelRenderer implements MultiLevelRenderer {
     private final Map<TileIndex, TileRequest> scheduledTileRequests;
     private final TileImageCache localTileCache;
 
+    private final static DescendingLevelsComparator descendingLevelsComparator = new DescendingLevelsComparator();
+    private final static AscendingLevelsComparator ascendingLevelsComparator = new AscendingLevelsComparator();
+
     public ConcurrentMultiLevelRenderer() {
         scheduledTileRequests = Collections.synchronizedMap(new HashMap<TileIndex, TileRequest>(37));
         localTileCache = new TileImageCache();
@@ -191,7 +194,7 @@ public class ConcurrentMultiLevelRenderer implements MultiLevelRenderer {
             final Rectangle tileRect = planarImage.getTileRect(tileIndex.tileX, tileIndex.tileY);
             final Rectangle2D bounds = i2m.createTransformedShape(tileRect).getBounds2D();
 
-            final TreeSet<TileImage> tentativeTileImageSet = new TreeSet<TileImage>(new DescendingLevelsComparator());
+            final TreeSet<TileImage> tentativeTileImageSet = new TreeSet<TileImage>(descendingLevelsComparator);
             final Collection<TileImage> tileImages = localTileCache.getAll();
 
             // Search for a tile image at the nearest higher resolution which is contained by bounds
@@ -490,8 +493,11 @@ public class ConcurrentMultiLevelRenderer implements MultiLevelRenderer {
                 // Called from EDT.
                 @Override
                 public void run() {
-                    final Rectangle viewRegion = getViewRegion(rendering.getViewport(), multiLevelSource, level, tileBounds);
-                    rendering.invalidateRegion(viewRegion);
+                    final Viewport vp = rendering.getViewport();
+                    if(vp != null) {
+                        final Rectangle viewRegion = getViewRegion(vp, multiLevelSource, level, tileBounds);
+                        rendering.invalidateRegion(viewRegion);
+                    }
                 }
             });
         }
@@ -605,7 +611,7 @@ public class ConcurrentMultiLevelRenderer implements MultiLevelRenderer {
         }
 
         private void removeOld(final long now, int currentLevel) {
-            final TreeSet<TileImage> treeSet = new TreeSet<TileImage>(new AscendingLevelsComparator());
+            final TreeSet<TileImage> treeSet = new TreeSet<TileImage>(ascendingLevelsComparator);
             treeSet.addAll(cache.values());
             // try to remove "old" tiles from other levels first
             for (TileImage image : treeSet) {
