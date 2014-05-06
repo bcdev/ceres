@@ -42,6 +42,8 @@ class ModuleClassLoader extends URLClassLoader {
     private URL[] nativeUrls;
     private Map<ClassLoader, Map<String, List<URL>>> resolvedResources;
 
+    private final Logger logger;
+
     public ModuleClassLoader(ClassLoader[] delegates,
                              URL[] dependencyUrls,
                              URL[] nativeUrls,
@@ -50,6 +52,7 @@ class ModuleClassLoader extends URLClassLoader {
         this.nativeUrls = nativeUrls;
         this.delegates = delegates;
         resolvedResources = new HashMap<>();
+        this.logger = Logger.getLogger(System.getProperty("ceres.context", "ceres"));
     }
 
     @Override
@@ -57,7 +60,6 @@ class ModuleClassLoader extends URLClassLoader {
         for (URL url : nativeUrls) {
             if (url.toExternalForm().endsWith(System.mapLibraryName(libname))) {
                 String absolutePath = UrlHelper.urlToFile(url).getAbsolutePath();
-                Logger logger = Logger.getLogger(System.getProperty("ceres.context", "ceres"));
                 Throwable throwable = new Throwable("This is not an exception.");
                 logger.log(Level.FINEST, "Native library found: " + absolutePath, throwable);
                 return absolutePath;
@@ -88,6 +90,9 @@ class ModuleClassLoader extends URLClassLoader {
         if(localResource != null) {
             return localResource;
         }
+
+        logger.log(Level.WARNING, "Ceres ModuleClassLoader: resource " +name+" not found");
+
         for (ClassLoader delegate : delegates) {
             URL resource = delegate.getResource(name);
             if (resource != null) {
@@ -135,6 +140,9 @@ class ModuleClassLoader extends URLClassLoader {
         try {
             return super.findClass(name);
         } catch (ClassNotFoundException e) {
+
+            logger.log(Level.WARNING, "Ceres ModuleClassLoader: class " +name+" not found");
+
             for (ClassLoader delegate : delegates) {
                 try {
                     return delegate.loadClass(name);
