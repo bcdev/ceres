@@ -16,6 +16,7 @@
 
 package com.bc.ceres.glevel;
 
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
@@ -52,7 +53,7 @@ public interface MultiLevelModel {
      *
      * @param level The resolution level, must be in the range 0 to {@link #getLevelCount() levelCount}-1.
      * @return The scaling factor, must be greater than or equal to 1.
-     *         {@link #getLevel(double) getLevel(scale)} shall return {@code level}.
+     * {@link #getLevel(double) getLevel(scale)} shall return {@code level}.
      * @see MultiLevelSource#getImage(int)
      */
     double getScale(int level);
@@ -72,6 +73,14 @@ public interface MultiLevelModel {
      * @return The affine transformation from model to image coordinates.
      */
     AffineTransform getModelToImageTransform(int level);
+
+    /**
+     * Gets the bounding box of an image at the given level in pixel coordinates.
+     *
+     * @param level The resolution level, must be in the range 0 to {@link #getLevelCount() levelCount}-1.
+     * @return the level image bounding box, may be {@code null} if unspecified.
+     */
+    Rectangle getImageBounds(int level);
 
     /**
      * Gets the bounding box in model coordinates.

@@ -156,6 +156,14 @@ public class DefaultMultiLevelModel implements MultiLevelModel {
         }
     }
 
+    public Rectangle getImageBounds(int level) {
+        if (modelBounds != null) {
+            return getModelToImageTransform(level).createTransformedShape(modelBounds).getBounds();
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public Rectangle2D getModelBounds() {
         if (modelBounds != null) {
@@ -165,6 +173,7 @@ public class DefaultMultiLevelModel implements MultiLevelModel {
         }
     }
 
+    // todo - check why modelBounds can be null! (nf)
     public void setModelBounds(Rectangle2D modelBounds) {
         if (modelBounds != null) {
             this.modelBounds = (Rectangle2D) modelBounds.clone();
