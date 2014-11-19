@@ -10,7 +10,7 @@
 
     <name>Ceres JAI Library</name>
     <artifactId>ceres-jai</artifactId>
-    <version>0.14</version>
+    <version>0.14.1</version>
 
     <packaging>jar</packaging>
 

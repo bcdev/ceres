@@ -2,7 +2,7 @@
     <manifestVersion>1.0.0</manifestVersion>
 
     <symbolicName>ceres-jai</symbolicName>
-    <version>0.14</version>
+    <version>0.14.1</version>
     <name>Ceres JAI Library</name>
 
     <categories>System,Library</categories>
@@ -14,8 +14,10 @@
 
     <changelog>
         <![CDATA[
-         Changes in 0.14
-         - fixed initialisation of SampleModel in ReinterpretOpImage
+         Changes in 0.14.1<br/>
+         [ceres-63] Median filter gives wrong results<br/>
+         Changes in 0.14<br/>
+         - fixed initialisation of SampleModel in ReinterpretOpImage<br/>
                 ]]>
     </changelog>
 
