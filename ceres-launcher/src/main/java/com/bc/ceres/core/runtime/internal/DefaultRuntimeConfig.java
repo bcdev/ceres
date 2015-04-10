@@ -166,7 +166,12 @@ public final class DefaultRuntimeConfig implements RuntimeConfig {
         }
         initLogLevel();
         initConsoleLog();
-        initLogger();
+        if (System.getProperty("platform") != null && System.getProperty("platform").equals("CEMS")) {
+            // special case: processing on CEMS requires specific logging due to NFS concurrency issues
+            initCemsLogger();
+        } else {
+            initDefaultLogger();
+        }
         setAutoDetectProperties();
     }
 
@@ -385,7 +390,7 @@ public final class DefaultRuntimeConfig implements RuntimeConfig {
             }
         } catch (IOException e) {
             throw new RuntimeConfigException(String.format("Failed to load configuration [%s]", configFilePath),
-                    e);
+                                             e);
         }
     }
 
@@ -500,7 +505,7 @@ public final class DefaultRuntimeConfig implements RuntimeConfig {
         consoleLog = Boolean.parseBoolean(consoleLogStr);
     }
 
-    private void initLogger() {
+    private void initDefaultLogger() {
         ConsoleHandler consoleHandler = null;
 
         Logger rootLogger = LogManager.getLogManager().getLogger("");
@@ -517,7 +522,7 @@ public final class DefaultRuntimeConfig implements RuntimeConfig {
         if (!logLevel.equals(Level.OFF)) {
             // if any of the log handler has our LogFormatter we have already configured the logger
             for (Handler handler : logger.getHandlers()) {
-                if (handler.getFormatter() instanceof  LogFormatter)  {
+                if (handler.getFormatter() instanceof LogFormatter) {
                     return;
                 }
             }
@@ -543,6 +548,44 @@ public final class DefaultRuntimeConfig implements RuntimeConfig {
                 System.err.println("Error: Failed to create log file: " + logFilePattern);
             }
         }
+    }
+
+    private void initCemsLogger() {
+        // workaround for logging of CEMS LSB processes, following approach from SST project
+        // This is just one special case! todo: find a more general solution!
+        if (logger == null) {
+            final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            final Formatter formatter = new Formatter() {
+                @Override
+                public String format(LogRecord record) {
+                    final StringBuilder sb = new StringBuilder();
+                    sb.append(dateFormat.format(new Date(record.getMillis())));
+                    sb.append(" - ");
+                    sb.append(record.getLevel().getName());
+                    sb.append(": ");
+                    sb.append(record.getMessage());
+                    sb.append("\n");
+                    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+                    final Throwable thrown = record.getThrown();
+                    if (thrown != null) {
+                        sb.append(thrown.toString());
+                        sb.append("\n");
+                    }
+                    return sb.toString();
+                }
+            };
+
+            final ConsoleHandler handler = new ConsoleHandler();
+            handler.setFormatter(formatter);
+            handler.setLevel(Level.ALL);
+
+            logger = Logger.getLogger("ga.cems");
+
+            logger.setUseParentHandlers(false);
+            logger.addHandler(handler);
+        }
+        logger.setLevel(Level.INFO);
     }
 
     private void setAutoDetectProperties() {
