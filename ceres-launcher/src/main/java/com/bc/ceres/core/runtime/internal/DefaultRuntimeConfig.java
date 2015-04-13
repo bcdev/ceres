@@ -581,6 +581,10 @@ public final class DefaultRuntimeConfig implements RuntimeConfig {
             handler.setLevel(Level.ALL);
 
             logger = Logger.getLogger("ga.cems");
+            final Handler[] handlers = logger.getHandlers();
+            for (Handler h : handlers) {
+                logger.removeHandler(h);
+            }
 
             logger.setUseParentHandlers(false);
             logger.addHandler(handler);
