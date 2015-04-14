@@ -589,7 +589,8 @@ public final class DefaultRuntimeConfig implements RuntimeConfig {
             logger.setUseParentHandlers(false);
             logger.addHandler(handler);
         }
-        logger.setLevel(Level.INFO);
+//        logger.setLevel(Level.INFO);
+        logger.setLevel(logLevel);
     }
 
     private void setAutoDetectProperties() {
