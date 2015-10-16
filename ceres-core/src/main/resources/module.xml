@@ -2,12 +2,14 @@
     <manifestVersion>1.0.0</manifestVersion>
 
     <symbolicName>ceres-core</symbolicName>
-    <version>0.14.1</version>
+    <version>0.14.2</version>
     <name>Ceres Runtime Library</name>
     <activator>com.bc.ceres.core.runtime.internal.RuntimeActivator</activator>
 
     <changelog>
         <![CDATA[
+        Changes in 0.14.2<br/>
+        [CERES-65] VirtualDir should handle nested archives<br/>
         Changes in 0.14.1<br/>
         [CERES-64] Fixed doubled registration of services<br/>
         Changes in 0.14<br/>
