@@ -34,19 +34,18 @@ import java.net.URI;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -504,27 +503,21 @@ public abstract class VirtualDir {
 
         @Override
         public String[] listAllFiles() throws IOException {
-            try (Stream<Path> pathStream = Files.walk(virtualDirPath)) {
-                Stream<Path> filteredstream = pathStream.filter(new Predicate<Path>() {
-                    @Override
-                    public boolean test(Path path) {
-                        return Files.isRegularFile(path);
+            final List<String> allFiles = new ArrayList<>();
+            final int baseLength = virtualDirPath.toUri().toString().length();
+
+            Files.walkFileTree(virtualDirPath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+
+                    final FileVisitResult fileVisitResult = super.visitFile(file, attrs);
+                    if(FileVisitResult.CONTINUE.equals(fileVisitResult) && Files.isRegularFile(file)) {
+                        allFiles.add(file.toUri().toString().substring(baseLength));
                     }
-                });
-                final int baseLength = virtualDirPath.toUri().toString().length();
-                Stream<String> fileStream = filteredstream.map(new Function<Path, String>() {
-                    @Override
-                    public String apply(Path path) {
-                        return path.toUri().toString().substring(baseLength);
-                    }
-                });
-                return fileStream.toArray(new IntFunction<String[]>() {
-                    @Override
-                    public String[] apply(int value) {
-                        return new String[value];
-                    }
-                });
-            }
+                    return fileVisitResult;
+                }
+            });
+            return allFiles.toArray(new String[allFiles.size()]);
         }
 
         @Override
